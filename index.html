@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fixit Mumbai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column, three numbered steps like a municipal form, the send button always the loudest thing. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#17212b; --muted:#566371; --line:#d3dae1;
+  --accent:#1d4f91; --accent-ink:#ffffff; --mark:#f2b705; --mark-ink:#2a2000;
+  --send:#157a41; --send-ink:#ffffff; --warn:#a4481a; --soft:#e4eaf1;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#10161c; --surface:#19222b; --ink:#e8edf2; --muted:#9aa7b3; --line:#2d3a46;
+    --accent:#86b6f2; --accent-ink:#0d1620; --mark:#f2b705; --mark-ink:#2a2000;
+    --send:#35b86b; --send-ink:#06210f; --warn:#f0a36b; --soft:#222e39;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#10161c; --surface:#19222b; --ink:#e8edf2; --muted:#9aa7b3; --line:#2d3a46;
+  --accent:#86b6f2; --accent-ink:#0d1620; --mark:#f2b705; --mark-ink:#2a2000;
+  --send:#35b86b; --send-ink:#06210f; --warn:#f0a36b; --soft:#222e39;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:18px}
+header h1{font-family:var(--display);font-weight:800;font-size:34px;line-height:1.02;margin:0;letter-spacing:-.01em}
+header h1 span{background:var(--mark);color:var(--mark-ink);padding:0 .18em;border-radius:4px}
+header p{margin:8px 0 0;color:var(--muted);max-width:42ch}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0;display:flex;gap:10px;align-items:center;text-wrap:balance}
+h2 .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--surface);font-family:var(--body);font-size:14px;font-weight:700;display:grid;place-items:center}
+label{font-weight:600;font-size:14px;display:block;margin-bottom:4px}
+label small{font-weight:400;color:var(--muted)}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+textarea{resize:vertical;min-height:70px}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer}
+.mailbox{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;background:var(--surface)}
+.mailbox.lead{border-color:var(--accent);border-width:2px}
+.mailbox small{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.mailbox .chip{text-decoration:none}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip[aria-disabled="true"]{opacity:.45}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.issues{display:flex;flex-direction:column;gap:6px}
+.issue{font:inherit;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:11px 12px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.issue small{color:var(--muted);flex:none;font-size:12px;font-weight:600}
+.issue[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent);background:var(--soft)}
+.empty{color:var(--muted);font-size:14px;margin:0}
+.fields{display:flex;flex-direction:column;gap:12px}
+.who,.match{background:var(--soft);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.who strong,.match strong{font-size:16px}
+.match[hidden]{display:none}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;font-weight:600}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;border:1px solid currentColor;color:var(--send)}
+.check{display:flex;gap:10px;align-items:flex-start}
+.check input{width:22px;height:22px;flex:none;margin:1px 0 0;padding:0}
+.check label{margin:0}
+.hint{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+.tip{font-size:14px;color:var(--muted);margin:0}
+.tip b{color:var(--ink)}
+.msg{min-height:210px;font-size:15px;line-height:1.4}
+.parts{display:flex;flex-direction:column;gap:18px}
+.part{display:flex;flex-direction:column;gap:8px}
+.part + .part{border-top:1px solid var(--line);padding-top:16px}
+.part h3{font-family:var(--display);font-weight:600;font-size:17px;margin:0;text-wrap:balance}
+.who ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.actions{display:flex;flex-direction:column;gap:8px}
+.btn{font:inherit;font-weight:700;text-align:center;text-decoration:none;border-radius:12px;padding:14px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:block;width:100%}
+.btn.send{background:var(--send);border-color:var(--send);color:var(--send-ink);font-size:17px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.btn small{display:block;font-weight:500;font-size:13px;opacity:.9}
+.need{color:var(--warn);font-size:14px;font-weight:600;margin:0}
+ol.esc{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+footer{color:var(--muted);font-size:13px;padding:0 4px}
+@media (prefers-reduced-motion:no-preference){.btn,.chip,.issue{transition:background-color .12s,border-color .12s}}
+ol.steps{margin:6px 0 4px;padding-left:22px}ol.steps li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Fixit <span>Mumbai</span></h1>
+  <p>Say what is wrong, fill a few fields, and send a ready-written complaint to the office that has to fix it.</p>
+</header>
+
+<section aria-labelledby="h-pick">
+  <h2 id="h-pick"><span class="n">1</span>What is the problem?</h2>
+  <div>
+    <label for="desc">Describe it in your own words <small>(English or Hinglish)</small></label>
+    <textarea id="desc" placeholder="Example: building site next to my society has no cover, dust everywhere since a week"></textarea>
+  </div>
+  <button type="button" class="btn primary" id="find">Find where this goes</button>
+  <div class="match" id="match" hidden aria-live="polite"></div>
+  <div class="or">or pick it yourself</div>
+  <div>
+    <label for="q">Search <small>(pothole, dust, parking, noise...)</small></label>
+    <input id="q" type="search" placeholder="Type a word" autocomplete="off">
+  </div>
+  <div class="chips" id="cats" role="group" aria-label="Categories"></div>
+  <div class="issues" id="issues"></div>
+</section>
+
+<section aria-labelledby="h-fill">
+  <h2 id="h-fill"><span class="n">2</span>Fill the details</h2>
+  <div class="who" id="who"></div>
+  <form class="fields" id="form" novalidate>
+    <div>
+      <label for="f-loc">Exact location</label>
+      <input id="f-loc" type="text" placeholder="Road, building or junction, area, pin code" autocomplete="off">
+    </div>
+    <div>
+      <label for="f-land">Landmark <small>(optional)</small></label>
+      <input id="f-land" type="text" placeholder="Opposite, next to, near" autocomplete="off">
+    </div>
+    <div>
+      <label for="f-map">Google Maps link <small>(optional, paste from Share)</small></label>
+      <input id="f-map" type="url" placeholder="https://maps.app.goo.gl/..." autocomplete="off">
+    </div>
+    <div class="check">
+      <input id="f-urgent" type="checkbox">
+      <label for="f-urgent">Happening right now, or a danger to life <small>(puts calling first)</small></label>
+    </div>
+    <div>
+      <label for="f-when">Seen on</label>
+      <input id="f-when" type="datetime-local">
+    </div>
+    <div id="extras" class="fields"></div>
+    <div>
+      <label for="f-det">Anything else <small>(optional)</small></label>
+      <textarea id="f-det" placeholder="How long it has been like this, who is affected"></textarea>
+    </div>
+    <div>
+      <label for="f-name">Your name <small>(optional)</small></label>
+      <input id="f-name" type="text" autocomplete="name">
+    </div>
+  </form>
+  <p class="tip" id="evidence"></p>
+</section>
+
+<section aria-labelledby="h-send">
+  <h2 id="h-send"><span class="n">3</span>Check and send</h2>
+  <p class="tip">Edit any message freely. Changing a field in step 2 rewrites it.</p>
+  <p class="need" id="need" hidden>Add the exact location in step 2 first.</p>
+  <div class="parts" id="parts"></div>
+</section>
+
+<section aria-labelledby="h-esc">
+  <h2 id="h-esc">No action in two to three weeks?</h2>
+  <ol class="esc">
+    <li>Reply on the same channel with your complaint number and a fresh photo of the same spot.</li>
+    <li>Write to your ward's Assistant Commissioner and your corporator, quoting the number.</li>
+    <li>File an RTI asking for the action taken on that complaint number.</li>
+    <li>Escalate on the state grievance portal, grievances.maharashtra.gov.in, then the Lokayukta.</li>
+  </ol>
+</section>
+
+<footer>
+  <p>This page only writes the message. Nothing is sent until you press send in WhatsApp, your mail app or the agency's portal. Every number and portal here was checked against official sites or news reports on 11 November 2026. Numbers change. If one fails, BMC's 1916 and the police on 112 will redirect you.</p>
+</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+var BMC_WA = {t:"wa",bot:"bmc",num:"918999228999",show:"89992 28999",label:"Start BMC's WhatsApp chatbot"};
+var TP_WA = {t:"wa",num:"918454999999",show:"84549 99999",label:"Send on WhatsApp to Traffic Police"};
+var STATE_WEB = {t:"web",url:"https://grievances.maharashtra.gov.in",label:"Open state grievance portal"};
+
+// Menu chatbots ignore a typed-out complaint. Each entry gives the opening word to send and what to tap after it.
+var LOC_STEP = "When it asks for the location: tap the paperclip, then Location, then Send your current location (or search the address if you have left the spot).";
+var PHOTO_STEP = "When it asks for a photo: tap the camera icon and send it.";
+var PASTE_STEP = "If it asks you to describe the problem, press and hold the message box and tap Paste. Your message is already copied.";
+var BOT = {
+  bmc: function(issue){
+    if(issue.kw){
+      return {start:issue.kw, steps:[
+        "Send the single word " + issue.kw + ". It is BMC's shortcut for this complaint.",
+        "If it asks for a language first, tap English, then send " + issue.kw + " again.",
+        LOC_STEP, PHOTO_STEP, PASTE_STEP,
+        "Save the complaint number it sends. You need it to follow up."]};
+    }
+    return {start:"Hi", steps:[
+      "Send the Hi, then tap English (or Marathi).",
+      "If it asks who you are, tap Citizen.",
+      "Open the complaint option (worded like Complaints or Register complaint)." + (/hawker/i.test(issue.l) ? " For hawkers there is a separate Illegal Hawking option." : ""),
+      "From the list of types, tap the one closest to: " + issue.l + ".",
+      LOC_STEP, PHOTO_STEP, PASTE_STEP,
+      "Save the complaint number it sends. If it goes quiet, send Hi to restart."]};
+  },
+  manhole: function(){
+    return {start:"Hi", steps:[
+      "Send the Hi, then tap Submit Complaint.",
+      LOC_STEP, PHOTO_STEP, PASTE_STEP,
+      "Save the complaint number it sends."]};
+  },
+  nch: function(){
+    return {start:"Hi", steps:[
+      "Send the Hi and wait for the welcome message.",
+      "Pick the option to register a grievance.",
+      "Answer what it asks: your state (Maharashtra), the company or seller, and the kind of problem.",
+      "When it asks for the details of the grievance, press and hold the message box and tap Paste.",
+      "Send the bill, order screenshot or photos when it asks for documents.",
+      "Save the docket number it sends."]};
+  },
+  adani: function(){
+    return {start:"Hi", steps:[
+      "Keep your 9-digit account number ready. It is printed on the bill.",
+      "Send the Hi, then pick the complaint option from its menu.",
+      "Enter the account number when asked, then pick the type of complaint.",
+      PASTE_STEP,
+      "Save the complaint number it sends.",
+      "Shortcut for no power: send the word Power, a space, then your account number."]};
+  }
+};
+
+var AG = {
+  bmc:{x:"mybmc",name:"BMC, your ward office",
+    note:"This number is BMC's chatbot. It ignores a typed-out complaint and only moves when you tap its buttons, so follow the steps under the button. You can also file in the MyBMC MARG app.",
+    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"web",url:"https://www.mcgm.gov.in",label:"Open BMC portal"}]},
+  bmcManhole:{x:"mybmc",name:"BMC, manhole desk",
+    note:"BMC runs a separate chatbot only for open, damaged or missing manhole covers.",
+    ch:[{t:"wa",bot:"manhole",num:"919324500600",show:"93245 00600",label:"Start BMC's manhole chatbot"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
+  tree:{x:"mybmc",name:"BMC Tree Authority",
+    note:"BMC's 1916 helpline registers tree complaints for the Garden Department. If the chatbot shows no matching option, call 1916. If cutting is under way right now, call the police too.",
+    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"tel",num:"100",label:"Call police (cutting under way)"}]},
+  light:{x:"mybmc",name:"BMC and your electricity distributor",
+    note:"Pick your area in step 2 to get the distributor's own streetlight desk. BMC takes the complaint for the whole city and passes it on.",
+    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"}]},
+  fire:{x:"mybmc",name:"Mumbai Fire Brigade, through BMC",
+    note:"The Fire Brigade is a BMC department with no separate complaint line for standing hazards, so these go through BMC. For a fire or immediate danger, call 101.",
+    ch:[BMC_WA,{t:"tel",num:"101",label:"Call Fire Brigade (emergency)"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
+  mpcb:{xm:"CMOMaharashtra",x:"mpcb_official",name:"Maharashtra Pollution Control Board (MPCB)",
+    note:"",ch:[]},
+  collector:{xm:"CMOMaharashtra",x:"maharevenue",name:"District Collector",
+    note:"Mumbai has two districts. Pick the part of Mumbai in step 2, or type your area or pin code, and the right Collector is chosen. Until then both addresses are shown.",
+    ch:[{t:"mail",addr:"collector.mumbaisuburb@maharashtra.gov.in",cc:"collectormsd@gmail.com,adlcolmsd@gmail.com",label:"Email Mumbai Suburban Collector"},
+        {t:"mail",addr:"collector.mumbaicity@maharashtra.gov.in",label:"Email Mumbai City Collector"},STATE_WEB]},
+  mczma:{x:"CMOMaharashtra",name:"Maharashtra Coastal Zone Management Authority",
+    note:"The authority has no form of its own. Email its Member Secretary and also file on the state grievance portal under the Environment department. It usually asks the Collector or BMC for a site report.",
+    ch:[{t:"mail",addr:"dir1.mev-mh@nic.in",label:"Email MCZMA Member Secretary"},STATE_WEB]},
+  traffic:{x:"MTPHereToHelp",name:"Mumbai Traffic Police",
+    note:"Make sure the number plate is readable in your photo. This WhatsApp number is an ordinary mobile line run by the traffic control room, so it shows no business badge or official name in WhatsApp. It is the number printed on the Mumbai Police website. The Mumbai Traffic Police app also takes violation reports with photo evidence.",
+    ch:[TP_WA,{t:"mail",addr:"multimediacell.traffic@mahapolice.gov.in",label:"Email Traffic Police"},
+        {t:"tel",num:"02224940303",show:"022 2494 0303",label:"Call Traffic control room"},
+        {t:"web",url:"https://trafficpolicemumbai.maharashtra.gov.in/",label:"Open Traffic Police site"}]},
+  rto:{x:"MMVD_RTO",name:"RTO (Motor Vehicles Department)",
+    note:"The RTOs take auto and taxi complaints by email and phone, not WhatsApp. The RTO that registered the vehicle holds the driver's permit, so the plate decides where this goes. Type the plate in step 2. If the plate is from outside Mumbai or you could not read it, pick where it happened and the local RTO is used. For Ola and Uber, the state toll-free line also works.",
+    ch:[{t:"mail",addr:"mh01taxicomplaint@gmail.com",label:"Email Tardeo RTO (MH01 plates)"},
+
+        {t:"mail",addr:"mh02.autotaxicomplaint@gmail.com",label:"Email Andheri RTO (MH02 plates)"},
+
+        {t:"mail",addr:"mh03autotaxicomplaint@gmail.com",label:"Email Wadala RTO (MH03 plates)"},
+        {t:"mail",addr:"mh47autotaxicomplaint@gmail.com",label:"Email Borivali RTO (MH47 plates)"},
+        {t:"tel",num:"1800220110",show:"1800 220 110",label:"Call state auto and taxi helpline"}]},
+  best:{xm:"mybmc",x:"myBESTBus",name:"BEST Undertaking (buses)",
+    note:"Give the route number, bus number, stop and time. BEST has no WhatsApp line for bus complaints. Its X handle posts updates but was not seen replying to complaints, so treat a post there as visibility only.",
+    ch:[{t:"tel",num:"1800227550",show:"1800 227 550",label:"Call BEST bus helpline"},
+        {t:"web",url:"https://www.bestundertaking.net/OnlineRequest.aspx",label:"Open BEST online request form"}]},
+  mmrda:{x:"MMRDAOfficial",name:"MMRDA",
+    note:"MMRDA builds most metro lines and many flyovers, and answers for its contractors. It takes complaints by phone, and its X handle has replied to citizens' safety complaints. Line 3 works belong to a different body, Mumbai Metro Rail Corporation: for those, pick the metro issue and Line 3.",
+    ch:[{t:"tel",num:"1800228801",show:"1800 228 801",label:"Call MMRDA toll-free"},
+        {t:"tel",num:"8657402090",show:"86574 02090",label:"Call MMRDA control room"}]},
+  metro:{name:"Mumbai Metro operator",
+    note:"Pick your line in step 2 to get that operator's customer care.",ch:[]},
+  rail:{xm:"RailMinIndia",x:"RailwaySeva",name:"Indian Railways (RailMadad)",
+    note:"Station complaints on RailMadad need no PNR. Log in with an OTP, pick the station and paste this text. Only 139 and RailMadad create an official record. File on RailMadad first, so you have a reference number. On X, the railway handle will then ask for your mobile number and your train ticket number (the PNR, or the UTS number on a local ticket or pass): send those by direct message, never in the public post.",
+    ch:[{t:"web",url:"https://railmadad.indianrailways.gov.in",label:"Open RailMadad"},{t:"tel",num:"139",label:"Call Rail helpline"}]},
+  noise:{x:"MumbaiPolice",name:"Mumbai Police",
+    note:"Noise complaints are a police matter under the Noise Rules. If the noise is on right now, calling 100 or 112 gets a patrol sent. For a recurring problem, untick the urgent box and use the online form, which lets you pick your police station. Mumbai Police has no WhatsApp line, though it also takes complaints by SMS. The Bombay High Court has directed the police to act without revealing who complained.",
+    ch:[{t:"sms",num:"7738133133",show:"77381 33133",label:"Send by SMS to Mumbai Police"},{t:"tel",num:"112",label:"Call police emergency line"},{t:"tel",num:"100",label:"Call police control room"},
+        {t:"web",url:"https://mumbaipolice.gov.in/OnlineComplaints?ps_id=0",label:"Open Mumbai Police online complaint"}]},
+  police:{x:"MumbaiPolice",name:"Mumbai Police",
+    note:"For anything happening right now, call. The online form takes minor matters and lets you pick your police station. Serious offences need a complaint at the station itself: hand this text over and keep a stamped copy.",
+    ch:[{t:"sms",num:"7738133133",show:"77381 33133",label:"Send by SMS to Mumbai Police"},{t:"tel",num:"112",label:"Call police emergency line"},{t:"tel",num:"100",label:"Call police control room"},
+        {t:"web",url:"https://mumbaipolice.gov.in/OnlineComplaints?ps_id=0",label:"Open Mumbai Police online complaint"}]},
+  cyber:{x:"MahaCyber1",x2:"MumbaiPolice",xwarn:"Careful: never put account numbers, OTPs or transaction IDs in a public post. Fraudsters watch these posts and pose as helpdesks in the replies. Trust only replies from the official handle.",name:"National Cyber Crime helpline",callFirst:true,
+    note:"Call first. Every hour matters for freezing the money. Then file online with the same details, and tell your bank.",
+    ch:[{t:"tel",num:"1930",label:"Call cyber fraud helpline"},{t:"web",url:"https://cybercrime.gov.in",label:"Open cybercrime.gov.in"}]},
+  power:{name:"Your electricity distributor",
+    note:"Your bill names the distributor. Pick it in step 2 to get its complaint channels.",ch:[]},
+  rera:{name:"MahaRERA",
+    note:"Complaints are filed online against the project's registration number. The filing fee is Rs 5,000. Use this text as your summary of facts.",
+    ch:[{t:"web",url:"https://maharera.maharashtra.gov.in",label:"Open MahaRERA"}]},
+  coop:{name:"Registrar of Co-operative Societies (Sahakar Samvad)",
+    note:"The Sahakar Samvad portal sends your complaint to the Deputy Registrar for your area and lets you track it. Each complaint costs Rs 50.",
+    ch:[{t:"web",url:"https://sahakarsamvadhousingfed.in/",label:"Open Sahakar Samvad"}]},
+  fda:{xm:"CMOMaharashtra",x:"FDA_MAHARASHTRA",name:"FDA Maharashtra",
+    note:"The FDA portal takes food and medicine complaints and gives a tracking number. Keep the bill and a photo of the product.",
+    ch:[{t:"mail",addr:"jc-foodhq@gov.in",label:"Email FDA Maharashtra"},{t:"web",url:"https://complaints.mahafda.in",label:"Open FDA complaint portal"},{t:"tel",num:"1800222365",show:"1800 222 365",label:"Call FDA helpline"}]},
+  consumer:{x:"jagograhakjago",name:"National Consumer Helpline",
+    note:"The helpline registers your grievance, gives a docket number and takes it up with the company. The WhatsApp number is the one printed on consumerhelpline.gov.in. It may show no business badge in WhatsApp.",
+    ch:[{t:"wa",bot:"nch",num:"918800001915",show:"88000 01915",label:"Start Consumer Helpline on WhatsApp"},
+        {t:"tel",num:"1915",label:"Call Consumer Helpline"},
+        {t:"web",url:"https://consumerhelpline.gov.in",label:"Open consumerhelpline.gov.in"}]},
+  ration:{x:"CMOMaharashtra",name:"Food and Civil Supplies, Maharashtra",
+    note:"Give your ration card number and the shop's name or number.",
+    ch:[{t:"tel",num:"1800224950",show:"1800 22 4950",label:"Call ration helpline"},
+        {t:"mail",addr:"helpline.mhpds@gov.in",label:"Email ration helpline"},
+        {t:"web",url:"https://mahafood.gov.in/grievance-redressal/",label:"Open Food Department grievance page"}]},
+  mangrove:{xm:"CMOMaharashtra",x:"MahaForest",x2:"MangroveForest",name:"Mangrove Cell, Forest Department",
+    note:"The portal asks for district, village or location, a landmark and photos, and gives a number to track. There is also a Mangrove Suraksha app. Photos from several days make the case much stronger.",
+    ch:[{t:"web",url:"https://www.mangrovesuraksha.com",label:"Open Mangrove Suraksha portal"},
+        {t:"tel",num:"1926",label:"Call Hello Forest helpline"},
+        {t:"mail",addr:"konkanmangroves@gmail.com",label:"Email Mangrove Cell"}]},
+  forest:{x:"MahaForest",name:"Forest Department (Hello Forest)",
+    note:"The 1926 helpline takes wildlife emergencies, poaching and illegal trade or possession of wild animals.",
+    ch:[{t:"tel",num:"1926",label:"Call Hello Forest helpline"}]},
+  aaple:{x:"CMOMaharashtra",name:"Aaple Sarkar (Right to Services)",
+    note:"If the notified time for your service has passed, file an appeal on Aaple Sarkar against your application number. For anything else about a government office, use the state grievance portal.",
+    ch:[{t:"web",url:"https://aaplesarkar.mahaonline.gov.in",label:"Open Aaple Sarkar"},STATE_WEB,{t:"tel",num:"18001208040",show:"1800 120 8040",label:"Call CM helpline"}]},
+  state:{x:"CMOMaharashtra",name:"Maharashtra grievance portal",
+    note:"Choose the department on the portal and paste this text. You get a token number to track it, and the portal aims to respond within 21 working days.",
+    ch:[STATE_WEB,{t:"tel",num:"18001208040",show:"1800 120 8040",label:"Call CM helpline"}]},
+  acb:{x:"ACB_Maharashtra",xwarn:"Careful: a public post can tip off the official and identify you. Do not name the person or the amount. The drafted post only says a bribe was demanded and where.",name:"Anti-Corruption Bureau, Maharashtra",
+    note:"Report before you pay anything. The Bureau keeps your identity confidential. Its site lists an email, an online complaint form, the 1064 helpline and a mobile number.",
+    ch:[{t:"mail",addr:"acbwebmail@mahapolice.gov.in",label:"Email the Anti-Corruption Bureau"},
+        {t:"web",url:"https://acbmaharashtra.gov.in",label:"Open ACB online complaint"},
+        {t:"tel",num:"1064",label:"Call ACB helpline"},
+        {t:"tel",num:"9930997700",show:"99309 97700",label:"Call ACB mobile number"}]},
+  eci:{x:"CEO_Maharashtra",name:"Election Commission",
+    note:"Corrections go in as Form 8 on the voter portal against your EPIC number. A missing name needs Form 6.",
+    ch:[{t:"web",url:"https://voters.eci.gov.in",label:"Open voters.eci.gov.in"},
+        {t:"tel",num:"1950",label:"Call voter helpline"},
+        {t:"mail",addr:"complaints@eci.gov.in",label:"Email Election Commission"}]}
+};
+
+var RTO = {
+  "01":["Tardeo RTO","","90762 01010","mh01taxicomplaint@gmail.com","9076201010"],
+  "02":["Andheri RTO","","99202 40202","mh02.autotaxicomplaint@gmail.com","9920240202"],
+  "03":["Wadala RTO","","91522 40303","mh03autotaxicomplaint@gmail.com","9152240303"],
+  "47":["Borivali RTO","","85919 44747","mh47autotaxicomplaint@gmail.com","8591944747"]
+};
+var SRO = {"A":1,"B":1,"C":1,"D":1,"F/S":1,"F/N":1,"G/S":1,"G/N":1,"M/E":2,"M/W":2,"H/E":2,"H/W":2,"L":2,"K/E":3,"K/W":3,"S":3,"N":3,"P/S":3,"P/N":4,"R/N":4,"R/S":4,"T":4};
+var ESC_POWER = " No fix in 3 days for a supply fault, or 15 days for anything else? Take it to the distributor's Consumer Grievance Redressal Forum, then to the Electricity Ombudsman within 60 days of the forum's order.";
+var VARIANTS = {
+  lightBest:{xm:"mybmc",x:"myBESTElectric",name:"BEST street lighting, with BMC",
+    note:"BEST runs streetlights in the island city. Its street-lighting desk takes calls. South Mumbai: 022 2377 1839 by day, 022 2206 6611 at night. North of there up to Sion and Mahim: 022 2410 1517 by day, 022 2414 6611 at night.",
+    ch:[BMC_WA,{t:"tel",num:"02223771839",show:"022 2377 1839",label:"Call BEST street lighting, South (day)"},
+        {t:"tel",num:"02224101517",show:"022 2410 1517",label:"Call BEST street lighting, North (day)"},
+        {t:"tel",num:"1916",label:"Call BMC helpline"}]},
+  lightAdani:{x:"Adani_Elec_Mum",name:"Adani Electricity, with BMC",
+    note:"Adani Electricity runs streetlights in the suburbs. Its app has a streetlight complaint option, and 19122 is its round-the-clock helpline.",
+    ch:[BMC_WA,{t:"wa",bot:"adani",num:"919594519122",show:"95945 19122",label:"Start Adani Electricity chatbot"},
+        {t:"tel",num:"19122",label:"Call Adani Electricity"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
+  pBest:{xm:"mybmc",x:"myBESTElectric",name:"BEST Undertaking (electricity)",
+    note:"Supply faults: 022 2208 5888 for South Mumbai, 022 2414 5888 for North. Billing: 022 2279 9559 South, 022 2419 4549 North. BEST has no central WhatsApp line." + ESC_POWER,
+    ch:[{t:"tel",num:"02222085888",show:"022 2208 5888",label:"Call BEST supply faults, South"},
+        {t:"tel",num:"02224145888",show:"022 2414 5888",label:"Call BEST supply faults, North"},
+        {t:"tel",num:"02222799559",show:"022 2279 9559",label:"Call BEST billing, South"},
+        {t:"tel",num:"02224194549",show:"022 2419 4549",label:"Call BEST billing, North"},
+        {t:"web",url:"https://customercare.bestundertaking.com/",label:"Open BEST customer care portal"}]},
+  pAdani:{x:"Adani_Elec_Mum",name:"Adani Electricity Mumbai",
+    note:"19122 is the round-the-clock helpline. Quote your consumer number." + ESC_POWER,
+    ch:[{t:"wa",bot:"adani",num:"919594519122",show:"95945 19122",label:"Start Adani Electricity chatbot"},
+        {t:"tel",num:"19122",label:"Call Adani Electricity"}]},
+  pTata:{x:"TataPower",name:"Tata Power, Mumbai",
+    note:"Tata Power has no confirmed WhatsApp complaint line. Email gives you a dated record." + ESC_POWER,
+    ch:[{t:"mail",addr:"customercare@tatapower.com",label:"Email Tata Power"},
+        {t:"tel",num:"18002095161",show:"1800 209 5161",label:"Call Tata Power"},
+        {t:"web",url:"https://customerportal.tatapower.com",label:"Open Tata Power portal"}]},
+  pMsedcl:{x:"MSEDCL",name:"Mahavitaran (MSEDCL)",
+    note:"Mahavitaran has no WhatsApp line for Mumbai. For a power cut you can also SMS NOPOWER and your 12-digit consumer number to 99303 99303." + ESC_POWER,
+    ch:[{t:"tel",num:"1912",label:"Call Mahavitaran"},
+        {t:"tel",num:"18002333435",show:"1800 233 3435",label:"Call Mahavitaran toll-free"},
+        {t:"mail",addr:"customercare@mahadiscom.in",label:"Email Mahavitaran"},
+        {t:"web",url:"https://www.mahadiscom.in/power-failure-complaint-registration/",label:"Open Mahavitaran complaint page"}]},
+  m27:{xm:"MMRDAOfficial",x:"MMMOCL_Official",name:"Maha Mumbai Metro (Lines 2A and 7)",
+    note:"The operator lists no WhatsApp complaint line.",
+    ch:[{t:"mail",addr:"customercare@mmmocl.co.in",label:"Email Maha Mumbai Metro"},
+        {t:"tel",num:"18008890505",show:"1800 889 0505",label:"Call Maha Mumbai Metro"},
+        {t:"tel",num:"18008890808",show:"1800 889 0808",label:"Call Maha Mumbai Metro (second line)"}]},
+  m1:{x:"MumbaiMetro01",name:"Mumbai Metro One (Line 1)",
+    note:"Metro One lists this WhatsApp number, its call centre and its X handle on its own customer care page. The WhatsApp account may look like an ordinary number with no business badge. If nobody replies, use the email below.",
+    ch:[{t:"wa",num:"919930310900",show:"99303 10900",label:"Send on WhatsApp to Metro One"},
+        {t:"mail",addr:"customercare@reliancemumbaimetro.com",label:"Email Metro One"},
+        {t:"tel",num:"02230310900",show:"022 3031 0900",label:"Call Metro One customer care"}]},
+  m3:{xm:"CMOMaharashtra",x:"MumbaiMetro3",name:"Mumbai Metro Line 3 (Aqua Line)",
+    note:"Line 3 is run separately from the other metro lines, by Mumbai Metro Rail Corporation. Its customer care email and call centre are listed on its own site. Stations also keep a complaint register at the customer service counter.",
+    ch:[{t:"mail",addr:"customercare@mmrcl.com",label:"Email Line 3 customer care"},
+        {t:"tel",num:"1800220220",show:"1800 220 220",label:"Call Line 3 helpline"},
+        {t:"tel",num:"1800220221",show:"1800 220 221",label:"Call Line 3 helpline (second line)"}]}
+};
+
+var LOCS = [
+  [["bandra kurla","bkc","kalina","vakola","kherwadi"],"H/E"],
+  [["lower parel","worli","prabhadevi"],"G/S"],
+  [["bandra","khar","santacruz","santa cruz"],{w:"H/W",e:"H/E"}],
+  [["juhu","versova","oshiwara","lokhandwala","four bungalows","seven bungalows"],"K/W"],
+  [["marol","seepz","sahar","chakala","gundavali"],"K/E"],
+  [["andheri","vile parle","parle","jogeshwari"],{w:"K/W",e:"K/E"}],
+  [["goregaon","aarey"],"P/S"],
+  [["malad","marve","aksa","madh","malwani"],"P/N"],
+  [["kandivali","kandivli","charkop","poisar"],"R/S"],
+  [["borivali","borivli","gorai","magathane"],"R/C"],
+  [["dahisar"],"R/N"],
+  [["kurla","sakinaka","saki naka","chandivali","chunabhatti"],"L"],
+  [["chembur","tilak nagar"],"M/W"],
+  [["govandi","mankhurd","deonar","trombay"],"M/E"],
+  [["ghatkopar","vidyavihar","pant nagar"],"N"],
+  [["bhandup","powai","vikhroli","kanjurmarg","nahur"],"S"],
+  [["mulund"],"T"],
+  [["dadar"],{w:"G/N",e:"F/S",d:"G/N"}],
+  [["mahim","dharavi","shivaji park"],"G/N"],
+  [["matunga","sion","wadala","antop hill"],"F/N"],
+  [["parel","sewri","sewree","lalbaug"],"F/S"],
+  [["byculla","mazgaon","mazagaon","nagpada","agripada"],"E"],
+  [["grant road","malabar hill","girgaon","girgaum","tardeo","breach candy","mumbai central","walkeshwar","peddar road","pedder road","opera house","kemps corner"],"D"],
+  [["marine lines","kalbadevi","bhuleshwar","pydhonie"],"C"],
+  [["dongri","masjid bunder","umerkhadi"],"B"],
+  [["colaba","fort","churchgate","cuffe parade","nariman point","ballard estate"],"A"]
+];
+var PINS = {
+  "400001":"A","400005":"A","400020":"A","400021":"A","400023":"A","400032":"A","400039":"A",
+  "400003":"B","400009":"B","400002":"C",
+  "400004":"D","400006":"D","400007":"D","400026":"D","400034":"D","400035":"D","400036":"D",
+  "400008":["D","E"],"400010":"E","400011":"E","400027":"E","400033":["E","F/S"],
+  "400012":"F/S","400015":"F/S","400014":["F/N","F/S","G/N"],
+  "400019":"F/N","400022":"F/N","400031":"F/N","400037":"F/N",
+  "400016":"G/N","400017":"G/N","400028":"G/N",
+  "400013":"G/S","400018":"G/S","400025":"G/S","400030":"G/S",
+  "400029":"H/E","400051":"H/E","400055":"H/E","400098":"H/E",
+  "400050":"H/W","400052":"H/W","400054":"H/W",
+  "400057":"K/E","400059":"K/E","400060":"K/E","400069":"K/E","400093":"K/E","400096":"K/E","400099":"K/E",
+  "400049":"K/W","400053":"K/W","400056":"K/W","400058":"K/W","400061":"K/W","400102":"K/W",
+  "400024":"L","400070":"L","400072":"L",
+  "400043":"M/E","400085":"M/E","400088":"M/E","400094":"M/E",
+  "400071":"M/W","400074":["M/W","M/E"],"400089":"M/W",
+  "400075":"N","400077":"N","400084":"N","400086":"N",
+  "400064":"P/N","400095":"P/N","400097":"P/N",
+  "400062":"P/S","400063":"P/S","400065":"P/S","400104":"P/S",
+  "400066":"R/C","400091":"R/C","400092":"R/C","400103":"R/C",
+  "400068":"R/N","400067":"R/S","400101":"R/S",
+  "400042":"S","400076":"S","400078":"S","400079":"S","400083":"S","400087":"S",
+  "400080":"T","400081":"T","400082":"T"
+};
+function wardFrom(text){
+  var loc = localityWard(text);
+  var m = /(?:^|\D)(400\d{3})(?!\d)/.exec(String(text).replace(/(\d{3})\s(\d{3})/g,"$1$2"));
+  var hit = m ? PINS[m[1]] : null;
+  if(typeof hit === "string"){ return {ward:hit, name:"pin code " + m[1]}; }
+  if(hit){
+    if(loc.ward){ return loc; }
+    if(loc.any && hit.indexOf(loc.any) > -1){ return {ward:"", name:loc.name, amb:true, any:loc.any}; }
+    return {ward:"", name:"pin code " + m[1], amb:true, any:hit[0]};
+  }
+  return loc;
+}
+function localityWard(text){
+  var t = " " + String(text).toLowerCase().replace(/[^a-z0-9]+/g," ") + " ";
+  var w = / (west|w) /.test(t), e = / (east|e) /.test(t), side = w && !e ? "w" : e && !w ? "e" : "";
+  for(var i = 0; i < LOCS.length; i++){
+    for(var j = 0; j < LOCS[i][0].length; j++){
+      var n = LOCS[i][0][j];
+      if(t.indexOf(" " + n + " ") > -1){
+        var r = LOCS[i][1];
+        if(typeof r === "string"){ return {ward:r, name:n}; }
+        var got = r[side] || r.d || "";
+        return {ward:got, name:n, amb:!got, any:got || r.w};
+      }
+    }
+  }
+  return {ward:"", name:""};
+}
+function geoFrom(text){
+  var g = wardFrom(text), wd = g.ward || g.any || "", c = wd.charAt(0);
+  g.area = !wd ? "" : "ABCDEFG".indexOf(c) > -1 ? "Island city" : "Suburbs";
+  g.zone = !wd ? "" : "ABCDEFG".indexOf(c) > -1 ? "Island city" : "HK".indexOf(c) > -1 ? "Bandra to Jogeshwari" : "PR".indexOf(c) > -1 ? "Goregaon to Dahisar" : "Kurla to Mulund or Mankhurd";
+  return g;
+}
+
+function agencyFor(key, v){
+  var base = AG[key], e = (v && v.extra) || {};
+  if(key === "rto"){
+    var m = /^MH(01|02|03|47)/.exec(String(e.veh || "").toUpperCase().replace(/[^A-Z0-9]/g,""));
+    var z = {"Island city":"01","Bandra to Jogeshwari":"02","Goregaon to Dahisar":"47","Kurla to Mulund or Mankhurd":"03"}[e.zone];
+    if(!m && !z){ return base; }
+    var r = RTO[m ? m[1] : z];
+    return {x:"MMVD_RTO", name:r[0], note:(m ? "This plate is registered with " + r[0] + ", which holds that driver's permit and can suspend it."
+        : "No Mumbai plate code was recognised, so this goes to " + r[0] + ", which covers the area where it happened.") + (r[1] ? "" : " This RTO's helpline number is not on WhatsApp, so email is the written route. Try the helpline during office hours.") + " If you get no reply, the state toll-free line takes complaints for the whole region.",
+      ch:(r[1] ? [{t:"wa",num:r[1],show:r[2],label:"Send on WhatsApp to " + r[0]}] : []).concat([{t:"mail",addr:r[3],label:"Email " + r[0]}],
+          r[4] ? [{t:"tel",num:r[4],show:r[2],label:"Call " + r[0] + " helpline"}] : [],
+          [{t:"tel",num:"1800220110",show:"1800 220 110",label:"Call state auto and taxi helpline"}])};
+  }
+  if(key === "mpcb"){
+    var n = SRO[e.ward];
+    return {x:"mpcb_official", xm:"CMOMaharashtra", name:base.name,
+      note:(n ? "Ward " + e.ward + " falls under MPCB's Sub-Regional Office Mumbai-" + ["I","II","III","IV"][n-1] + ". The email is copied to the Regional Office."
+              : "Pick your BMC ward in step 2 to reach the right Sub-Regional Office. Without it, this goes to the Regional Office for Mumbai.") +
+        " MPCB has no WhatsApp line or web form for complaints. Its charter gives the Sub-Regional Officer 30 days, then the Regional Officer 30 days, then Head Office 30 days, so keep the email as your dated record. The Maha Paryavaran app also takes geotagged industrial complaints.",
+      ch:[{t:"mail",addr:n ? "sromumbai" + n + "@mpcb.gov.in" : "romumbai@mpcb.gov.in",cc:n ? "romumbai@mpcb.gov.in" : "",label:"Email MPCB " + (n ? "Sub-Regional Office" : "Regional Office")},
+          {t:"web",url:"https://play.google.com/store/apps/details?id=com.maha.paryavaran",label:"Get the Maha Paryavaran app"},STATE_WEB]};
+  }
+  if(key === "collector" && e.area){
+    var sub = e.area === "Suburbs";
+    return {x:"maharevenue", xm:"CMOMaharashtra", name:"Collector, " + (sub ? "Mumbai Suburban" : "Mumbai City") + " district",
+      note:(sub ? "The suburbs from Bandra, Kurla and beyond fall in Mumbai Suburban district, with the Collector's office in Bandra East. The email is copied to the Collector office's general address and the Additional Collector."
+                : "The island city falls in Mumbai City district, with the Collector's office at Old Custom House, Fort.") + " The state grievance portal (Revenue department) gives you a tracking number as a backup.",
+      ch:[{t:"mail",addr:sub ? "collector.mumbaisuburb@maharashtra.gov.in" : "collector.mumbaicity@maharashtra.gov.in",cc:sub ? "collectormsd@gmail.com,adlcolmsd@gmail.com" : "",label:"Email " + (sub ? "Mumbai Suburban" : "Mumbai City") + " Collector"},STATE_WEB]};
+  }
+  if(key === "rail" && e.rline){
+    return {x:base.x, x2:e.rline === "Western" ? "drmbct" : "drmmumbaicr", xm:base.xm, name:base.name, note:base.note, ch:base.ch};
+  }
+  if(key === "light"){ return e.area === "Island city" ? VARIANTS.lightBest : e.area === "Suburbs" ? VARIANTS.lightAdani : base; }
+  if(key === "power"){ return {"BEST":VARIANTS.pBest,"Adani Electricity":VARIANTS.pAdani,"Tata Power":VARIANTS.pTata,"Mahavitaran":VARIANTS.pMsedcl}[e.disco] || base; }
+  if(key === "metro"){ return {"Line 1":VARIANTS.m1,"Line 2A or 7":VARIANTS.m27,"Line 3":VARIANTS.m3}[e.line] || base; }
+  return base;
+}
+
+var X = {
+  veh:{id:"veh",label:"Vehicle number",ph:"MH 01 AB 1234"},
+  site:{id:"site",label:"Site or builder name",ph:"From the board at the gate",opt:true},
+  unit:{id:"unit",label:"Name of the shop, plant or unit",ph:"As on the signboard"},
+  pole:{id:"pole",label:"Pole number",ph:"Painted on the pole",opt:true},
+  route:{id:"route",label:"Bus route and bus number",ph:"Route 83, MH 01 ..."},
+  train:{id:"train",label:"Train or station",ph:"Station, platform, or train number"},
+  fare:{id:"fare",label:"From, to and fare demanded",ph:"Andheri station to Lokhandwala, asked Rs 150"},
+  proj:{id:"proj",label:"Project name and RERA number",ph:"P518000..."},
+  soc:{id:"soc",label:"Society name and registration number",ph:""},
+  prod:{id:"prod",label:"Product, batch number and expiry",ph:"From the pack",opt:true},
+  bill:{id:"bill",label:"Bill number and amount",ph:"",opt:true},
+  app:{id:"app",label:"Application number and service",ph:"Application ID, what you applied for"},
+  off:{id:"off",label:"Official's name, post and office",ph:""},
+  txn:{id:"txn",label:"Transaction ID, amount and your bank",ph:"UTR or reference number"},
+  ref:{id:"ref",label:"Complaint reference number",ph:"Fill this in after you call 1930 or file online",opt:true},
+  epic:{id:"epic",label:"EPIC (voter ID) number",ph:""},
+  dept:{id:"dept",label:"Department or office",ph:""},
+  cons:{id:"cons",label:"Consumer number",ph:"From your electricity bill",opt:true},
+  card:{id:"card",label:"Ration card number and shop",ph:"",opt:true},
+  ward:{id:"ward",label:"BMC ward",opt:true,sel:["A","B","C","D","E","F/N","F/S","G/N","G/S","H/E","H/W","K/E","K/W","L","M/E","M/W","N","P/N","P/S","R/C","R/N","R/S","S","T"],none:"Not sure"},
+  area:{id:"area",label:"Which part of Mumbai",sel:["Island city","Suburbs"],none:"Not sure"},
+  disco:{id:"disco",label:"Electricity company on your bill",sel:["BEST","Adani Electricity","Tata Power","Mahavitaran"],none:"Choose"},
+  zone:{id:"zone",label:"Where it happened",opt:true,sel:["Island city","Bandra to Jogeshwari","Goregaon to Dahisar","Kurla to Mulund or Mankhurd"],none:"Not sure"},
+  rline:{id:"rline",label:"Railway line",opt:true,sel:["Western","Central or Harbour"],none:"Not sure"},
+  line:{id:"line",label:"Metro line",sel:["Line 1","Line 2A or 7","Line 3"],none:"Choose"}
+};
+
+var AIR = "BMC's air pollution mitigation guidelines for construction sites";
+var CATS = ["Roads","Air and dust","Garbage","Water, drains, power","Traffic","Safety and noise","Buildings","Shops and food","Environment","Govt services","Other"];
+
+var ISSUES = [
+ {c:0,l:"Pothole",a:"bmc",kw:"Pothole",ask:"Fill the pothole properly and confirm with a photo.",k:"pothole crater khadda khadde gaddha gadda khadda"},
+ {c:0,l:"Bad road surface or failed repair",a:"bmc",ask:"Inspect and resurface this stretch.",k:"uneven bumpy patch resurfac resurface quality paver concrete tar asphalt sinking sadak rasta kharab"},
+ {c:0,l:"Broken or missing footpath",a:"bmc",ask:"Repair the footpath so it is safe to walk on.",k:"footpath pavement sidewalk slab tiles walkway"},
+ {c:0,l:"Footpath blocked",a:"bmc",ask:"Clear the footpath for pedestrians.",w:"BMC removes hawkers, stalls and debris.",also:[["traffic","Only if vehicles are parked on the footpath.","Challan and remove the vehicles parked on the footpath."]],k:"hawker encroach stall vendor feriwala block blocked thela"},
+ {c:0,l:"Open or broken manhole",urgent:true,a:"bmcManhole",kw:"Manhole",ask:"Cover it immediately. It is a danger to life.",k:"manhole chamber dhakkan"},
+ {c:0,l:"Road dug up and left open",a:"bmc",x:["site"],ask:"Close the trench and restore the road surface.",k:"trench dug digging excavat excavate cable khod khuda"},
+ {c:0,l:"Streetlight not working",a:"light",x:["area","pole"],ask:"Restore the streetlight. The stretch is unsafe after dark.",k:"streetlight street-light lamp dark batti andhera pole"},
+
+ {c:1,l:"Construction site dust",a:"bmc",x:["site","ward"],rule:AIR+" require 25 to 35 foot metal sheets around the site, green cloth or tarpaulin on the building, and water sprinkling on debris.",ask:"Inspect the site and enforce the guidelines.",w:"BMC's ward squad inspects and can stop the work.",also:[["mpcb","Worth adding for a large site or a repeat offender. MPCB can act under the Air Act.","Inspect the site for air pollution violations and act against the developer."]],k:"construction site dusty builder tower sheet sprinkl dhool dhul cement redevelop"},
+ {c:1,l:"Demolition without cover or water",a:"bmc",x:["site"],rule:AIR+" require demolition to be covered top to bottom with continuous water spraying.",ask:"Stop the work until the covers and sprinklers are in place.",k:"demolition demolish demolishing todfod"},
+ {c:1,l:"Uncovered or overloaded debris truck",a:"bmc",x:["veh","site"],rule:AIR+" require vehicles carrying construction material to be fully covered and not overloaded, with tyre washing at site exits.",ask:"Act against the vehicle and the site it serves.",w:"BMC acts against the construction site the truck serves.",also:[["traffic","The truck itself is breaking traffic rules.","Challan the vehicle for carrying uncovered or overloaded material."]],k:"dumper truck lorry tipper uncovered overloaded spill mud"},
+ {c:1,l:"Garbage or leaves being burnt",urgent:true,a:"bmc",rule:"BMC has banned open burning anywhere in its area.",ask:"Stop the burning and act against whoever is responsible.",k:"burning burnt burn bonfire jala jalana aag"},
+ {c:1,l:"Smoke from a bakery, eatery, plant or factory",a:"bmc",x:["unit","ward"],ask:"Inspect the unit's fuel and emissions and act on violations.",w:"BMC's ward squad acts fastest on smoky fuel at bakeries, eateries and plants.",also:[["mpcb","MPCB regulates emissions from plants and industrial units.","Inspect the unit's emissions and consent conditions and act on violations."]],k:"chimney bakery rmc furnace bhatti factory tandoor smoke dhuan dhua fumes"},
+ {c:1,l:"Vehicle belching smoke",a:"traffic",x:["veh"],ask:"Check the vehicle's PUC and take action.",k:"exhaust puc silencer belching"},
+
+ {c:2,l:"Garbage not collected or dumping spot",a:"bmc",ask:"Clear the garbage and stop the dumping at this spot.",k:"garbage waste trash rubbish litter bin kachra kachara dustbin stink"},
+ {c:2,l:"Debris dumped on the road",a:"bmc",rule:"BMC bars dumping of construction material and debris on roads, footpaths and open areas.",ask:"Remove the debris and trace who dumped it.",k:"debris rubble malba dumped rabit"},
+ {c:2,l:"Dead animal",a:"bmc",ask:"Remove the carcass.",k:"dead carcass"},
+ {c:2,l:"Dirty or broken public toilet",a:"bmc",ask:"Clean and repair the toilet block.",k:"toilet urinal sulabh washroom shauchalay"},
+
+ {c:3,l:"No water or low pressure",a:"bmc",ask:"Restore normal supply.",k:"water supply tap pressure paani pani"},
+ {c:3,l:"Contaminated water",a:"bmc",ask:"Test the supply and fix the source of contamination.",k:"contaminated muddy smelly ganda dirty yellow"},
+ {c:3,l:"Leaking or burst pipe",a:"bmc",ask:"Repair the leak. Water is being wasted.",k:"leak leaking burst pipeline pipe"},
+ {c:3,l:"Sewage overflow",a:"bmc",ask:"Clear the blockage and clean the area.",k:"sewage sewer overflow gutter drainage"},
+ {c:3,l:"Waterlogging or choked drain",a:"bmc",ask:"Clean the drain before the next rain.",k:"waterlog flood flooding nullah nala choked clogged drain"},
+ {c:3,l:"Mosquito breeding or rats",a:"bmc",ask:"Send pest control and remove the stagnant water.",k:"mosquito dengue malaria fogging rats rodent machhar machar stagnant"},
+
+ {c:4,l:"Illegal parking or abandoned vehicle",a:"traffic",x:["veh"],ask:"Tow or challan the vehicle.",w:"Traffic Police challan and tow.",also:[["bmc","Only if the vehicle looks abandoned. BMC removes those.","Remove the abandoned vehicle from the road."]],k:"parking parked abandoned double-park tow car bike scooter tempo"},
+ {c:4,l:"Signal not working",a:"traffic",ask:"Repair the signal and post a constable meanwhile.",k:"signal traffic-light"},
+ {c:4,l:"Wrong-side or rash driving",a:"traffic",x:["veh"],ask:"Issue a challan to the vehicle.",k:"wrong-side wrong rash speeding helmet triple jumped honking horn"},
+ {c:4,l:"Auto or taxi refusal or overcharging",a:"traffic",x:["veh","zone","fare"],ask:"Fine the driver for refusal or overcharging.",w:"Traffic Police can fine the driver.",also:[["rto","The RTO can suspend the driver's permit or licence.","Act against the driver's permit and licence."]],k:"auto rickshaw riksha taxi cab kaali-peeli refused refuse refusal meter overcharg overcharge bhada ola uber"},
+ {c:4,l:"BEST bus problem",a:"best",x:["route"],ask:"Look into this and reply with the action taken.",k:"bus conductor depot"},
+ {c:4,l:"Railway station or train problem",a:"rail",x:["rline","train"],ask:"Resolve this and share a reference number.",k:"railway train platform fob coach"},
+
+ {c:5,l:"Loudspeaker or late-night construction noise",urgent:true,a:"noise",conf:true,ask:"Stop the noise. It is beyond permitted hours.",w:"Police can stop it on the spot.",also:[["bmc","For construction noise or a repeat problem. BMC's ward office can act against the site.","Act against the source for breaching noise rules and permitted hours."]],k:"noise loud loudspeaker dj music speaker awaaz awaz shor noisy drilling"},
+ {c:5,l:"Fire hazard in a building",a:"fire",x:["unit"],ask:"Inspect the premises for fire safety compliance.",k:"fire exit extinguisher wiring hazard cylinder"},
+ {c:5,l:"Unsafe spot or illegal activity",a:"police",ask:"Increase patrolling and act on this.",k:"harass drugs liquor gambling unsafe stalking theft eve-teasing drunk"},
+ {c:5,l:"Online or payment fraud",xnoloc:true,urgent:true,a:"cyber",xask:"Freeze the transaction and help with my complaint #",x:["txn"],ask:"Freeze the transaction and register my complaint.",k:"fraud upi scam otp phishing hacked cheated"},
+
+ {c:6,l:"Illegal construction",a:"bmc",x:["site"],ask:"Inspect and act against the unauthorised work.",k:"illegal unauthorised unauthorized extension extra floor encroachment"},
+ {c:6,l:"Dilapidated building or wall",a:"bmc",ask:"Inspect the structure and secure it.",k:"dilapidated crack collapse collapsing crumbling"},
+ {c:6,l:"Illegal hoarding or banner",a:"bmc",ask:"Remove it and fine whoever put it up.",k:"hoarding banner poster flex billboard"},
+ {c:6,l:"Dangerous tree or illegal cutting",a:"tree",ask:"Send the tree officer to inspect.",k:"tree branch felling trimming ped jhad"},
+ {c:6,l:"Builder delay or broken promise",a:"rera",x:["proj"],ask:"Direct the promoter to deliver possession or refund with interest.",k:"builder possession flat developer rera delayed promoter"},
+ {c:6,l:"Housing society mismanagement",a:"coop",x:["soc"],ask:"Direct the managing committee to comply.",k:"committee secretary chairman maintenance accounts agm chs"},
+
+ {c:7,l:"Unsafe or adulterated food",a:"fda",x:["unit","prod"],ask:"Inspect the outlet and test the product.",w:"FDA inspects the outlet and tests the product.",also:[["consumer","Only if you also want a refund or compensation.","Get me a refund from the seller and confirm in writing."]],k:"food restaurant hotel adulterat adulterate adulterated expired stale hygiene insect cockroach medicine sweet milk"},
+ {c:7,l:"Any seller or service dispute",a:"consumer",x:["unit","bill"],ask:"Resolve my grievance and confirm in writing.",k:"refund defective warranty seller delivery order replacement customer mrp overcharged weight charged shop shopkeeper packet price bill"},
+
+ {c:8,l:"Mangrove cutting or wetland dumping",a:"mangrove",x:["area"],ask:"Stop the activity and restore the site.",w:"The Mangrove Cell protects notified mangrove land.",also:[["collector","Much mangrove land is private or revenue land, where the Collector acts.","Inspect the site, stop the activity and order restoration."],["bmc","Only if debris or garbage is being dumped.","Stop the dumping and remove the debris."]],k:"mangrove wetland creek reclamation khadi"},
+ {c:8,l:"Sewage or effluent into a river, lake or sea",a:"mpcb",x:["unit","ward"],ask:"Trace the discharge and act against the source.",w:"MPCB regulates what is discharged into water bodies.",also:[["bmc","BMC runs the sewers and drains that carry it.","Trace the discharge point in the drain network and stop it."]],k:"effluent discharge river lake sea mithi chemical beach"},
+
+ {c:9,l:"Certificate or licence delayed",a:"aaple",x:["app"],ask:"Deliver the service or state the reason in writing.",k:"certificate licence license pending application domicile income caste"},
+ {c:9,l:"Bribe demanded",a:"acb",x:["off"],ask:"Register my complaint and advise next steps.",k:"bribe bribery corruption corrupt rishwat chai-pani"},
+ {c:9,l:"Voter list error",a:"eci",x:["epic"],ask:"Correct my entry in the roll.",k:"voter election epic electoral"},
+
+ {c:3,l:"Power cut, meter or electricity bill problem",a:"power",x:["disco","cons"],ask:"Fix this and confirm with a complaint number.",k:"electricity power bijli outage meter current voltage load-shedding blackout"},
+ {c:4,l:"Metro station or train problem",a:"metro",x:["line","train"],ask:"Resolve this and reply with the action taken.",k:"metro"},
+ {c:5,l:"Stray dog nuisance",a:"bmc",ask:"Send the dog control team for sterilisation and vaccination.",k:"stray dog dogs kutta kutte bite"},
+ {c:7,l:"Ration shop problem",a:"ration",x:["card"],ask:"Inspect the shop and make sure my entitlement is issued.",k:"ration pds rationing"},
+ {c:8,l:"Building or dumping on a beach, creek or the coast",a:"mczma",w:"The coastal authority enforces the Coastal Regulation Zone rules.",also:[["bmc","Only if debris or garbage is being dumped.","Stop the dumping and remove the debris."]],ask:"Inspect the site for a Coastal Regulation Zone violation and stop the work.",k:"crz coast coastal beach seafront shore"},
+ {c:8,l:"Wild animal in danger, trapped or being sold",urgent:true,a:"forest",ask:"Send a rescue team and act against whoever is responsible.",k:"wildlife wild snake leopard monkey parrot turtle poach owl"},
+ {c:8,l:"Cruelty to an animal",urgent:true,a:"police",ask:"Register my complaint under the Prevention of Cruelty to Animals Act.",k:"cruelty beating beaten abuse abused torture tortured poison"},
+ {c:0,l:"Metro or flyover construction site hazard",a:"mmrda",x:["site"],w:"MMRDA is responsible for the site and its contractor.",also:[["bmc","For dust, debris or a damaged road around the site.","Inspect the site and enforce dust, debris and road restoration rules on the contractor."]],rule:"BMC's air pollution mitigation guidelines require above-ground metro works to have 25 foot barricading, covers, and smog guns or sprinklers.",ask:"Inspect the site, make it safe and reply with the action taken.",k:"mmrda pillar girder barricade barricading crane flyover viaduct metro-work"},
+ {c:10,l:"Any other civic problem",a:"bmc",ask:"Look into this and reply with the action taken.",k:""},
+ {c:10,l:"Problem with a state government office",a:"state",x:["dept"],ask:"Resolve this and reply with the action taken.",k:"mantralaya collector tehsildar talathi ration government office"}
+];
+var OTHER = ISSUES.length - 2;
+
+var STOP = {the:1,and:1,any:1,not:1,for:1,with:1,from:1,into:1,other:1,left:1,being:1,above:1,your:1,spot:1,open:1,road:1,problem:1,illegal:1,working:1,broken:1,missing:1,public:1,dirty:1,best:1,station:1,online:1,payment:1,water:1,society:1,housing:1};
+
+function norm(s){ return " " + String(s).toLowerCase().replace(/[^a-z0-9\-]+/g," ") + " "; }
+
+// A keyword matches a typed word only if the word is the keyword itself or the keyword plus a
+// normal ending (potholes, flooding, encroachment). So "shor" matches "shor" and never "short".
+var ENDINGS = {"":1,s:1,es:1,ed:1,er:1,ers:1,ing:1,ings:1,ion:1,ions:1,ment:1,ments:1,ging:1,ged:1,ation:1,y:1,ies:1,age:1,wala:1,wale:1};
+function hits(words, term){
+  for(var i = 0; i < words.length; i++){
+    var w = words[i];
+    if(w === term || (w.length > term.length && w.indexOf(term) === 0 && ENDINGS[w.slice(term.length)])){ return true; }
+  }
+  return false;
+}
+function rank(desc){
+  var d = norm(desc).replace(/street lights?/g,"streetlight").replace(/foot path/g,"footpath").replace(/man hole/g,"manhole").replace(/pot holes?/g,"pothole");
+  var words = d.trim().split(" "), out = [];
+  ISSUES.forEach(function(i, idx){
+    var s = 0;
+    (i.k || "").split(" ").forEach(function(t){ if(t && hits(words, t)){ s += 3; } });
+    norm(i.l).trim().split(" ").forEach(function(t){ if(t.length > 2 && !STOP[t] && hits(words, t)){ s += 2; } });
+    if(s > 0){ out.push({i:idx, s:s}); }
+  });
+  out.sort(function(a,b){ return b.s - a.s || a.i - b.i; });
+  return out;
+}
+
+function plate(desc){
+  var m = String(desc).toUpperCase().match(/\b[A-Z]{2}[ -]?\d{1,2}[ -]?[A-Z]{1,3}[ -]?\d{3,4}\b/);
+  return m ? m[0] : "";
+}
+
+function fmtWhen(v){
+  if(!v){ return ""; }
+  var d = new Date(v);
+  if(isNaN(d.getTime())){ return ""; }
+  var m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var h = d.getHours(), ap = h >= 12 ? "pm" : "am"; h = h % 12 || 12;
+  var mi = d.getMinutes(); mi = (mi < 10 ? "0" : "") + mi;
+  return d.getDate() + " " + m[d.getMonth()] + " " + d.getFullYear() + ", " + h + ":" + mi + " " + ap;
+}
+
+function partsOf(issue){
+  var p = [{a:issue.a, ask:issue.ask, why:issue.w || ""}];
+  (issue.also || []).forEach(function(o){ p.push({a:o[0], why:o[1], ask:o[2]}); });
+  return p;
+}
+function shortName(name){ return name.split(",")[0].split(" (")[0]; }
+
+function compose(issue, v, part, others){
+  var L = [];
+  if(issue.kw && part.a === issue.a){ L.push(issue.kw); L.push(""); }
+  L.push("Complaint: " + issue.l);
+  L.push("Location: " + (v.loc || "[add exact location]"));
+  if(v.land){ L.push("Landmark: " + v.land); }
+  if(v.map){ L.push("Map: " + v.map); }
+  if(v.when){ L.push("Seen on: " + v.when); }
+  (issue.x || []).forEach(function(key){
+    var t = v.extra[key];
+    if(t){ L.push(X[key].label + ": " + t); }
+  });
+  if(v.det){ L.push("Details: " + v.det); }
+  if(issue.rule){ L.push(""); L.push("Rule: " + issue.rule); }
+  L.push("");
+  L.push("Request: " + part.ask + " Please share a complaint number.");
+  if(others && others.length){ L.push("Also reported to: " + others.join("; ") + "."); }
+  if(issue.conf){ L.push("Please keep my identity confidential, as the Bombay High Court directed for noise complaints in January 2025."); }
+  L.push("Photo attached.");
+  if(v.name){ L.push(""); L.push("From: " + v.name); }
+  return L.join("\n");
+}
+
+function refFieldFor(issue, ag, urgent){
+  // A reference number exists by the time X is offered only if a WhatsApp desk or a portal comes first.
+  if(!ag.x){ return false; }
+  if(issue.xask){ return true; }
+  if(urgent || ag.callFirst){ return false; }
+  return ag.ch.some(function(c){ return c.t === "wa" || c.t === "web"; });
+}
+function xTags(ag){
+  var out = [];
+  [ag.x, ag.x2, ag.xm].forEach(function(h){ if(h && out.indexOf(h) < 0){ out.push(h); } });
+  return out;
+}
+function tweetText(issue, v, part, tags, ref){
+  ref = String(ref || "").trim().slice(0, 40);
+  var t = tags.map(function(h){ return "@" + h; }).join(" ") + " " + issue.l;
+  if(!issue.xnoloc){ t += " at " + (v.loc || "") + (v.land ? " (" + v.land + ")" : ""); }
+  t += (v.when ? ", " + v.when : "") + ". ";
+  if(v.extra && v.extra.veh){ t += "Vehicle " + v.extra.veh + ". "; }
+  var tail = "";
+  if(issue.xask){ t += issue.xask + (ref ? " " + ref : " [add number]"); }
+  else{ t += part.ask; tail = ref ? " Ref: " + ref : ""; }
+  var map = issue.xnoloc ? "" : v.map;
+  var max = (map ? 255 : 280) - tail.length;
+  if(t.length > max){ t = t.slice(0, max - 3).replace(/\s+\S*$/, "") + "..."; }
+  return t + tail + (map ? " " + map : "");
+}
+
+if(typeof module !== "undefined"){ module.exports = {hits:hits, refFieldFor:refFieldFor, xTags:xTags, tweetText:tweetText, wardFrom:wardFrom, geoFrom:geoFrom, agencyFor:agencyFor, VARIANTS:VARIANTS, compose:compose, partsOf:partsOf, shortName:shortName, rank:rank, plate:plate, ISSUES:ISSUES, AG:AG, X:X, CATS:CATS}; }
+if(typeof document === "undefined" || !document){ return; }
+
+var $ = function(id){return document.getElementById(id);};
+var cat = 0, cur = ISSUES[0], autoDet = "";
+
+function el(tag, attrs, text){
+  var e = document.createElement(tag);
+  if(attrs){ for(var k in attrs){ e.setAttribute(k, attrs[k]); } }
+  if(text != null){ e.textContent = text; }
+  return e;
+}
+function val(id){ var e = $(id); return e ? e.value.trim() : ""; }
+var short = shortName;
+
+function renderCats(){
+  var box = $("cats"); box.textContent = "";
+  CATS.forEach(function(name, i){
+    var b = el("button", {type:"button", "class":"chip", "aria-pressed": String(i===cat && !$("q").value)}, name);
+    b.addEventListener("click", function(){ cat = i; $("q").value = ""; renderCats(); renderIssues(); });
+    box.appendChild(b);
+  });
+}
+
+function renderIssues(){
+  var q = $("q").value.trim().toLowerCase();
+  var list = ISSUES.filter(function(i){
+    if(q){ return (i.l+" "+(i.k||"")+" "+CATS[i.c]).toLowerCase().indexOf(q) > -1; }
+    return i.c === cat;
+  });
+  var box = $("issues"); box.textContent = "";
+  if(!list.length){
+    box.appendChild(el("p", {"class":"empty"}, "Nothing matches. Try another word, or describe it in the box above."));
+    return;
+  }
+  list.forEach(function(i){
+    var b = el("button", {type:"button", "class":"issue", "aria-pressed": String(i===cur)});
+    b.appendChild(el("span", null, i.l));
+    b.appendChild(el("small", null, short(AG[i.a].name)));
+    b.addEventListener("click", function(){ pick(i); });
+    box.appendChild(b);
+  });
+}
+
+function pick(issue){
+  $("f-urgent").checked = !!issue.urgent;
+  cur = issue; cat = issue.c; $("q").value = "";
+  renderCats(); renderIssues(); renderIssue();
+}
+
+function renderIssue(){
+  var ps = partsOf(cur);
+  var who = $("who"); who.textContent = "";
+  if(ps.length === 1){
+    var top = el("div");
+    top.appendChild(el("span", null, "This goes to "));
+    top.appendChild(el("strong", null, AG[cur.a].name));
+    who.appendChild(top);
+  }else{
+    who.appendChild(el("strong", null, "This needs " + ps.length + " complaints"));
+    var ol = el("ol");
+    ps.forEach(function(p){
+      var li = el("li");
+      li.appendChild(el("b", null, shortName(AG[p.a].name) + ". "));
+      li.appendChild(document.createTextNode(p.why));
+      ol.appendChild(li);
+    });
+    who.appendChild(ol);
+    who.appendChild(el("div", null, "Fill the details once. Step 3 writes a separate message for each office."));
+  }
+  var pw = el("div"); pw.appendChild(el("span", {"class":"pill"}, "Checked 11 Nov 2026")); who.appendChild(pw);
+
+  var keep = {};
+  (cur.x || []).forEach(function(key){ keep[key] = val("x-" + X[key].id); });
+  var ex = $("extras"); ex.textContent = "";
+  (cur.x || []).forEach(function(key){
+    var f = X[key], d = el("div");
+    var lab = el("label", {"for":"x-"+f.id}, f.label + " ");
+    if(f.opt){ lab.appendChild(el("small", null, "(optional)")); }
+    var inp;
+    if(f.sel){
+      inp = el("select", {id:"x-"+f.id});
+      inp.appendChild(el("option", {value:""}, f.none || "Choose"));
+      f.sel.forEach(function(o){ inp.appendChild(el("option", {value:o}, o)); });
+      inp.addEventListener("change", build);
+    }else{
+      inp = el("input", {id:"x-"+f.id, type:"text", placeholder:f.ph || "", autocomplete:"off"});
+      inp.addEventListener("input", build);
+    }
+    inp.value = keep[key] || "";
+    if(key === "ward" || key === "area" || key === "zone"){ d.appendChild(lab); d.appendChild(inp); d.appendChild(el("small", {id:"hint-"+f.id, "class":"hint"})); ex.appendChild(d); return; }
+    d.appendChild(lab); d.appendChild(inp); ex.appendChild(d);
+  });
+
+  var hasVeh = (cur.x || []).indexOf("veh") > -1;
+  var ev = $("evidence"); ev.textContent = "";
+  ev.appendChild(el("b", null, "Take a photo or short video now. "));
+  ev.appendChild(document.createTextNode(hasVeh
+    ? "Get the number plate and the surroundings in the same frame."
+    : "Include something that shows where it is: a shop sign, building name or junction."));
+  build();
+}
+
+var autoGeo = {}, refs = {};
+function fillGeo(){
+  var g = geoFrom(val("f-loc") + " " + val("f-land"));
+  ["ward","area","zone"].forEach(function(k){
+    var e = $("x-" + k), h = $("hint-" + k);
+    if(!e){ return; }
+    if(e.value === "" || e.value === autoGeo[k]){ e.value = g[k] || ""; autoGeo[k] = e.value; }
+    if(!h){ return; }
+    if(e.value && e.value === autoGeo[k]){ h.textContent = "Worked out from " + g.name + " in your location. Change it if that is wrong."; }
+    else if(e.value){ h.textContent = ""; }
+    else if(g.amb){ h.textContent = "Your location (" + g.name + ") spans more than one ward. Add East or West, a pin code or a nearby area name and this fills itself."; }
+    else{ h.textContent = "Type your pin code or area in the location box (for example 400053, or Andheri West) and this fills itself."; }
+  });
+}
+
+function build(){
+  fillGeo();
+  var extra = {};
+  (cur.x || []).forEach(function(key){ extra[key] = val("x-" + X[key].id); });
+  var v = {loc:val("f-loc"), land:val("f-land"), map:val("f-map"),
+    when:fmtWhen($("f-when").value), det:val("f-det"), name:val("f-name"), extra:extra};
+  var ps = partsOf(cur), box = $("parts"); box.textContent = "";
+  $("need").hidden = !!v.loc;
+  ps.forEach(function(p, n){
+    var ag = agencyFor(p.a, v);
+    var others = ps.filter(function(o){ return o !== p; }).map(function(o){ return shortName(AG[o.a].name); });
+    var blk = el("div", {"class":"part"});
+    blk.appendChild(el("h3", null, (ps.length > 1 ? "Complaint " + (n+1) + " of " + ps.length + ": " : "To ") + ag.name));
+    if(ps.length > 1 && p.why){ var w = el("p", {"class":"tip"}); w.appendChild(el("b", null, p.why)); blk.appendChild(w); }
+    blk.appendChild(el("p", {"class":"tip"}, ag.note));
+    var wrap = el("div");
+    wrap.appendChild(el("label", {"for":"msg-" + n}, "Message to " + shortName(ag.name)));
+    var ta = el("textarea", {id:"msg-" + n, "class":"msg", spellcheck:"true"});
+    ta.value = compose(cur, v, p, others);
+    wrap.appendChild(ta); blk.appendChild(wrap);
+    var acts = el("div", {"class":"actions"}); blk.appendChild(acts);
+    var note = el("p", {"class":"tip"}); blk.appendChild(note);
+    var rkey = cur.l + "|" + p.a;
+    var showRef = refFieldFor(cur, ag, $("f-urgent").checked);
+    var draw = function(){
+      var xt = ag.x ? tweetText(cur, v, p, xTags(ag), showRef ? refs[rkey] : "") : "";
+      renderActions(ag, ta, acts, note, !!v.loc, ps.length > 1 && n < ps.length - 1, xt);
+    };
+    if(showRef){
+      var rw = el("div");
+      rw.appendChild(el("label", {"for":"ref-" + n}, "Reference number from " + shortName(ag.name) + " "));
+      rw.lastChild.appendChild(el("small", null, "(once you have it)"));
+      var ri = el("input", {id:"ref-" + n, type:"text", placeholder:"Paste it here and your X post will quote it", autocomplete:"off"});
+      ri.value = refs[rkey] || "";
+      ri.addEventListener("input", function(){ refs[rkey] = ri.value; draw(); });
+      rw.appendChild(ri); blk.appendChild(rw);
+    }
+    ta.addEventListener("input", draw);
+    draw();
+    box.appendChild(blk);
+  });
+}
+
+function renderActions(ag, ta, box, note, ready, more, xt){
+  var text = ta.value;
+  box.textContent = "";
+  var urgent = !!ag.callFirst || $("f-urgent").checked;
+  var of = function(t){ return ag.ch.filter(function(c){ return c.t === t; }); };
+  var was = of("wa"), smss = of("sms"), mails = of("mail"), webs = of("web"), tels = of("tel"), lead = true, xDone = false;
+  var cls = function(kind){ var c = lead ? kind : ""; lead = false; return "btn " + c; };
+  var after = function(){
+    note.textContent = "Opened." + (xt && !xDone ? " Posting it on X as well, tagging @" + ag.x + ", adds public pressure." : "") + (more ? " Then come back to this page for the next complaint below." : "");
+  };
+  var guard = function(a){
+    if(!ready){ a.setAttribute("aria-disabled","true"); a.addEventListener("click", function(e){ e.preventDefault(); $("f-loc").focus(); }); }
+    else{ a.addEventListener("click", after); }
+  };
+  var escape = function(a){
+    // tel:, sms: and mailto: cannot leave an embedded frame on their own. Try the top window first, then a new tab.
+    a.addEventListener("click", function(e){
+      if(a.getAttribute("aria-disabled") === "true"){ return; }
+      var url = a.getAttribute("href");
+      try{ window.top.location.href = url; e.preventDefault(); }
+      catch(err){ try{ var w = window.open(url, "_blank"); if(w){ e.preventDefault(); } }catch(err2){} }
+    });
+  };
+  var handoff = function(a, sm, value, what){
+    // Phone, mail and SMS links can be blocked inside an embedded page, so also copy the value as a fallback.
+    a.addEventListener("click", function(){
+      try{ navigator.clipboard.writeText(value).then(function(){
+        sm.textContent = what + " " + value + " copied too, in case your phone did not open it.";
+      }, function(){}); }catch(e){}
+    });
+  };
+  var addTel = function(c){
+    var a = el("a", {"class":cls("primary"), href:"tel:" + c.num, target:"_blank", rel:"noopener"}, c.label);
+    var sm = el("small", null, "Dial " + (c.show || c.num));
+    a.appendChild(sm);
+    escape(a); handoff(a, sm, c.num, "Number");
+    a.addEventListener("click", after); box.appendChild(a);
+  };
+  var addX = function(){
+    if(!xt || xDone){ return; }
+    var first = lead;
+    var a = el("a", {"class":cls("primary"), target:"_blank", rel:"noopener", href:"https://x.com/intent/post?text=" + encodeURIComponent(xt)},
+      (first ? "Post on X, tagging " : "Also post on X, tagging ") + xTags(ag).map(function(h){ return "@" + h; }).join(", "));
+    a.appendChild(el("small", null, cur.xnoloc ? "Public post. Your location is left out of it." : "Public post: anyone can see the location. Add your photo there."));
+    xDone = true;
+    if(!ready){ a.setAttribute("aria-disabled","true"); a.addEventListener("click", function(e){ e.preventDefault(); $("f-loc").focus(); }); }
+    else{ a.addEventListener("click", after); }
+    box.appendChild(a);
+    if(ag.xwarn){ box.appendChild(el("p", {"class":"need"}, ag.xwarn)); }
+  };
+
+  var phoneOnly = !was.length && !smss.length && !mails.length && !webs.length;
+  if(urgent){ tels.forEach(addTel); tels = []; addX(); }
+  else if(phoneOnly){ addX(); }
+
+  was.forEach(function(c){
+    var a = el("a", {"class":cls("send"), target:"_blank", rel:"noopener",
+      href:"https://wa.me/" + c.num + "?text=" + encodeURIComponent(text)});
+    a.appendChild(document.createTextNode(c.label));
+    if(c.bot){
+      var b = BOT[c.bot](cur);
+      a.href = "https://wa.me/" + c.num + "?text=" + encodeURIComponent(b.start);
+      var bsm = el("small", null, c.show + ", sends \"" + b.start + "\" and copies your message for later");
+      a.appendChild(bsm);
+      if(ready){ a.addEventListener("click", function(){
+        try{ navigator.clipboard.writeText(text).then(function(){ bsm.textContent = "Message copied. Follow the steps below in WhatsApp."; }, function(){}); }catch(e){}
+      }); }
+      guard(a); box.appendChild(a);
+      box.appendChild(el("p", {"class":"tip"}, "This is a menu chatbot. What to press:"));
+      var ol = el("ol", {"class":"tip steps"});
+      b.steps.forEach(function(t){ ol.appendChild(el("li", null, t)); });
+      box.appendChild(ol);
+      box.appendChild(el("p", {"class":"tip"}, "Menu wording changes now and then. Tap the nearest match."));
+      return;
+    }
+    a.appendChild(el("small", null, c.show + ", opens WhatsApp with the message typed"));
+    guard(a); box.appendChild(a);
+  });
+
+  mails.forEach(function(c){
+    // mailto: is unreliable inside an embedded page, so offer each webmail's own compose link (plain https).
+    var subj = "Complaint: " + cur.l, E = encodeURIComponent;
+    var links = [
+      ["Gmail", "https://mail.google.com/mail/?view=cm&fs=1&to=" + E(c.addr) + (c.cc ? "&cc=" + E(c.cc) : "") + "&su=" + E(subj) + "&body=" + E(text)],
+      ["Outlook", "https://outlook.live.com/mail/0/deeplink/compose?to=" + E(c.addr) + (c.cc ? "&cc=" + E(c.cc) : "") + "&subject=" + E(subj) + "&body=" + E(text)],
+      ["Yahoo", "https://compose.mail.yahoo.com/?to=" + E(c.addr) + (c.cc ? "&cc=" + E(c.cc) : "") + "&subject=" + E(subj) + "&body=" + E(text)],
+      ["Mail app", "mailto:" + c.addr + "?" + (c.cc ? "cc=" + E(c.cc) + "&" : "") + "subject=" + E(subj) + "&body=" + E(text)]
+    ];
+    // On a phone only the mail app link carries the draft reliably, so it goes first there.
+    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ links.unshift(links.pop()); links[0][0] = "Open in your mail app"; }
+    var wrap = el("div", {"class":"mailbox" + (lead ? " lead" : "")}); lead = false;
+    wrap.appendChild(el("strong", null, c.label));
+    var msm = el("small", null, "To " + c.addr + (c.cc ? ", copy to " + c.cc.split(",").join(" and ") : ""));
+    wrap.appendChild(msm);
+    var row = el("div", {"class":"chips"});
+    links.forEach(function(l, k){
+      var a = el("a", {"class":"chip" + (k === 0 ? " on" : ""), href:l[1], target:"_blank", rel:"noopener"}, l[0]);
+      if(ready && l[1].indexOf("mailto:") === 0){ escape(a); handoff(a, msm, c.addr, "Address"); }
+      guard(a); row.appendChild(a);
+    });
+    wrap.appendChild(row);
+    box.appendChild(wrap);
+  });
+
+  var copy = el("button", {type:"button", "class":cls("primary")}, "Copy the message");
+  copy.addEventListener("click", function(){
+    var done = function(ok){ copy.textContent = ok ? "Copied. Paste it where you file." : "Could not copy. Select the text above and copy it."; };
+    try{
+      navigator.clipboard.writeText(ta.value).then(function(){ done(true); }, function(){ done(false); });
+    }catch(e){ done(false); }
+  });
+  box.appendChild(copy);
+
+  webs.forEach(function(c){
+    var a = el("a", {"class":"btn", href:c.url, target:"_blank", rel:"noopener"}, c.label);
+    a.appendChild(el("small", null, c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
+    a.addEventListener("click", after); box.appendChild(a);
+  });
+  lead = false;
+  addX();
+
+  smss.forEach(function(c){
+    var a = el("a", {"class":"btn", target:"_blank", rel:"noopener", href:"sms:" + c.num + "?&body=" + encodeURIComponent(text)}, c.label);
+    var ssm = el("small", null, c.show + ", opens your messages app with the text typed");
+    a.appendChild(ssm);
+    if(ready){ escape(a); handoff(a, ssm, c.num, "Number"); }
+    guard(a); box.appendChild(a);
+  });
+  tels.forEach(addTel);
+
+  note.textContent = ag.callFirst ? "Call first, then file online with the same details. Save the reference number you get."
+    : urgent ? "Marked as urgent, so calling comes first. Read the message out and ask for a complaint number, then send the written complaint for the record."
+    : was.length ? "A link cannot attach photos. Once WhatsApp opens, add your photo in the chat, then press send. Save the complaint number you get back."
+    : mails.length ? "Pick your mail service and a new email opens with the address, subject and message filled in. Attach your photo and send. If none of them suits you, copy the message and email the address shown."
+    : webs.length ? "Copy the message, open the form, paste it and attach your photo. Save the complaint number you get back."
+    : xt ? "This office takes complaints only by phone, so a public post on X is the written option. Read the message out when you call, and ask for a complaint number."
+    : "Read the message out when you call, and ask for a complaint number.";
+}
+
+function showMatch(idx, alts, how){
+  var box = $("match"); box.textContent = ""; box.hidden = false;
+  var issue = ISSUES[idx];
+  var top = el("div");
+  top.appendChild(el("span", null, how + " "));
+  top.appendChild(el("strong", null, issue.l));
+  box.appendChild(top);
+  var names = partsOf(issue).map(function(p){ return shortName(AG[p.a].name); });
+  box.appendChild(el("div", null, (names.length > 1 ? "It needs complaints to " + names.join(" and ") : "It goes to " + AG[issue.a].name) + ". Step 2 is ready below."));
+  if(alts.length){
+    var row = el("div", {"class":"chips"});
+    row.appendChild(el("span", {"class":"tip"}, "Or did you mean"));
+    alts.forEach(function(a){
+      var b = el("button", {type:"button", "class":"chip"}, ISSUES[a].l);
+      b.addEventListener("click", function(){ pick(ISSUES[a]); showMatch(a, [], "Switched to"); fillFrom($("desc").value, {}); });
+      row.appendChild(b);
+    });
+    box.appendChild(row);
+  }
+}
+
+function fillFrom(desc, got){
+  var det = $("f-det");
+  if(!det.value.trim() || det.value === autoDet){ det.value = desc.trim(); autoDet = det.value; }
+  var v = $("x-veh"), p = (got.vehicle || plate(desc) || "").slice(0, 20);
+  if(v && !v.value && p){ v.value = p; }
+  if(got.location && !val("f-loc")){ $("f-loc").value = String(got.location).slice(0, 200); }
+  if(got.landmark && !val("f-land")){ $("f-land").value = String(got.landmark).slice(0, 200); }
+  build();
+}
+
+function find(){
+  var desc = $("desc").value.trim();
+  if(desc.length < 4){
+    var box = $("match"); box.hidden = false; box.textContent = "Write a line about what you saw, then press the button.";
+    return;
+  }
+  var r = rank(desc);
+  if(r.length){
+    pick(ISSUES[r[0].i]);
+    showMatch(r[0].i, r.slice(1,3).map(function(o){ return o.i; }), "Best match:");
+  }else{
+    pick(ISSUES[OTHER]);
+    showMatch(OTHER, [], "No exact match, so filed as");
+  }
+  fillFrom(desc, {});
+}
+
+function nowLocal(){
+  var d = new Date(), p = function(n){ return (n < 10 ? "0" : "") + n; };
+  return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes());
+}
+
+$("f-when").value = nowLocal();
+["f-loc","f-land","f-map","f-when","f-det","f-name"].forEach(function(id){ $(id).addEventListener("input", build); });
+$("f-urgent").addEventListener("change", build);
+$("form").addEventListener("submit", function(e){ e.preventDefault(); });
+$("q").addEventListener("input", function(){ renderCats(); renderIssues(); });
+$("find").addEventListener("click", find);
+renderCats(); renderIssues(); renderIssue();
+
+})();
+</script>
+</body>
+</html>
