@@ -203,7 +203,7 @@ footer .disc{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-tr
 
 <footer>
   <p class="disc">Fixit Mumbai is an independent citizen project. It is not affiliated with BMC, the police or any government body.</p>
-  <p>This page only writes the message. Nothing is sent until you press send in WhatsApp, your mail app or the agency's portal. Every number and portal here was checked against official sites or news reports on 11 November 2026. Numbers change. If one fails, BMC's 1916 and the police on 112 will redirect you.</p>
+  <p>This page only writes the message. Nothing is sent until you press send in WhatsApp, your mail app or the agency's portal. Every number and portal here was checked against official sites or news reports on 12 November 2026. Numbers change. If one fails, BMC's 1916 and the police on 112 will redirect you.</p>
 </footer>
 </main>
 
@@ -223,16 +223,14 @@ var BOT = {
   bmc: function(issue){
     if(issue.kw){
       return {start:issue.kw, steps:[
-        "Send the single word " + issue.kw + ". It is BMC's shortcut for this complaint.",
+        "Send the single word " + issue.kw + ". BMC has announced it as the shortcut for this complaint.",
         "If it asks for a language first, tap English, then send " + issue.kw + " again.",
         LOC_STEP, PHOTO_STEP, PASTE_STEP,
         "Save the complaint number it sends. You need it to follow up."]};
     }
     return {start:"Hi", steps:[
       "Send the Hi, then tap English (or Marathi).",
-      "If it asks who you are, tap Citizen.",
-      "Open the complaint option (worded like Complaints or Register complaint)." + (/hawker/i.test(issue.l) ? " For hawkers there is a separate Illegal Hawking option." : ""),
-      "From the list of types, tap the one closest to: " + issue.l + ".",
+      "Follow its menu to the complaint section and tap the type closest to: " + issue.l + ".",
       LOC_STEP, PHOTO_STEP, PASTE_STEP,
       "Save the complaint number it sends. If it goes quiet, send Hi to restart."]};
   },
@@ -244,21 +242,17 @@ var BOT = {
   },
   nch: function(){
     return {start:"Hi", steps:[
-      "Send the Hi and wait for the welcome message.",
-      "Pick the option to register a grievance.",
-      "Answer what it asks: your state (Maharashtra), the company or seller, and the kind of problem.",
-      "When it asks for the details of the grievance, press and hold the message box and tap Paste.",
-      "Send the bill, order screenshot or photos when it asks for documents.",
-      "Save the docket number it sends."]};
+      "Send the Hi and follow its steps. It asks for your state, city, sector, category of grievance and the company's name.",
+      "When it asks for the details of the grievance, press and hold the message box and tap Paste. Your message is already copied.",
+      "Upload the bill, order screenshot or photos when it asks for documents.",
+      "Save the docket number it sends at the end."]};
   },
   adani: function(){
     return {start:"Hi", steps:[
-      "Keep your 9-digit account number ready. It is printed on the bill.",
-      "Send the Hi, then pick the complaint option from its menu.",
-      "Enter the account number when asked, then pick the type of complaint.",
-      PASTE_STEP,
-      "Save the complaint number it sends.",
-      "Shortcut for no power: send the word Power, a space, then your account number."]};
+      "Keep your account number from the bill ready.",
+      "Send the Hi. The chatbot handles supply problems: registering a No Supply complaint and checking restoration status.",
+      "It also has an option to chat with a representative. Use that, and paste your copied message, for anything else.",
+      "For a billing or meter complaint, the email or the 19122 call below is the surer route."]};
   }
 };
 
@@ -293,7 +287,7 @@ var AG = {
         {t:"tel",num:"02224940303",show:"022 2494 0303",label:"Call Traffic control room"},
         {t:"web",url:"https://trafficpolicemumbai.maharashtra.gov.in/",label:"Open Traffic Police site"}]},
   rto:{x:"MMVD_RTO",name:"RTO (Motor Vehicles Department)",
-    note:"The RTOs take auto and taxi complaints by email and phone, not WhatsApp. The RTO that registered the vehicle holds the driver's permit, so the plate decides where this goes. Type the plate in step 2. If the plate is from outside Mumbai or you could not read it, pick where it happened and the local RTO is used. For Ola and Uber, the state toll-free line also works.",
+    note:"The RTOs take auto and taxi complaints by email. The RTO that registered the vehicle holds the driver's permit, so the plate decides where this goes. Type the plate in step 2. If the plate is from outside Mumbai or you could not read it, pick where it happened and the local RTO is used. For Ola and Uber, the state toll-free line also works.",
     ch:[{t:"mail",addr:"mh01taxicomplaint@gmail.com",label:"Email Tardeo RTO (MH01 plates)"},
 
         {t:"mail",addr:"mh02.autotaxicomplaint@gmail.com",label:"Email Andheri RTO (MH02 plates)"},
@@ -307,8 +301,7 @@ var AG = {
         {t:"web",url:"https://www.bestundertaking.net/OnlineRequest.aspx",label:"Open BEST online request form"}]},
   mmrda:{x:"MMRDAOfficial",name:"MMRDA",
     note:"MMRDA builds most metro lines and many flyovers, and answers for its contractors. It takes complaints by phone, and its X handle has replied to citizens' safety complaints. Line 3 works belong to a different body, Mumbai Metro Rail Corporation: for those, pick the metro issue and Line 3.",
-    ch:[{t:"tel",num:"1800228801",show:"1800 228 801",label:"Call MMRDA toll-free"},
-        {t:"tel",num:"8657402090",show:"86574 02090",label:"Call MMRDA control room"}]},
+    ch:[{t:"tel",num:"1800228801",show:"1800 228 801",label:"Call MMRDA's 24x7 control room (toll-free)"}]},
   metro:{name:"Mumbai Metro operator",
     note:"Pick your line in step 2 to get that operator's customer care.",ch:[]},
   rail:{xm:"RailMinIndia",x:"RailwaySeva",name:"Indian Railways (RailMadad)",
@@ -374,10 +367,10 @@ var AG = {
 };
 
 var RTO = {
-  "01":["Tardeo RTO","","90762 01010","mh01taxicomplaint@gmail.com","9076201010"],
-  "02":["Andheri RTO","","99202 40202","mh02.autotaxicomplaint@gmail.com","9920240202"],
-  "03":["Wadala RTO","","91522 40303","mh03autotaxicomplaint@gmail.com","9152240303"],
-  "47":["Borivali RTO","","85919 44747","mh47autotaxicomplaint@gmail.com","8591944747"]
+  "01":["Tardeo RTO","","90762 01010","mh01taxicomplaint@gmail.com",""],
+  "02":["Andheri RTO","","99202 40202","mh02.autotaxicomplaint@gmail.com",""],
+  "03":["Wadala RTO","","91522 40303","mh03autotaxicomplaint@gmail.com",""],
+  "47":["Borivali RTO","","85919 44747","mh47autotaxicomplaint@gmail.com",""]
 };
 var SRO = {"A":1,"B":1,"C":1,"D":1,"F/S":1,"F/N":1,"G/S":1,"G/N":1,"M/E":2,"M/W":2,"H/E":2,"H/W":2,"L":2,"K/E":3,"K/W":3,"S":3,"N":3,"P/S":3,"P/N":4,"R/N":4,"R/S":4,"T":4};
 var ESC_POWER = " No fix in 3 days for a supply fault, or 15 days for anything else? Take it to the distributor's Consumer Grievance Redressal Forum, then to the Electricity Ombudsman within 60 days of the forum's order.";
@@ -388,8 +381,8 @@ var VARIANTS = {
         {t:"tel",num:"02224101517",show:"022 2410 1517",label:"Call BEST street lighting, North (day)"},
         {t:"tel",num:"1916",label:"Call BMC helpline"}]},
   lightAdani:{x:"Adani_Elec_Mum",name:"Adani Electricity, with BMC",
-    note:"Adani Electricity runs streetlights in the suburbs. Its app has a streetlight complaint option, and 19122 is its round-the-clock helpline.",
-    ch:[BMC_WA,{t:"wa",bot:"adani",num:"919594519122",show:"95945 19122",label:"Start Adani Electricity chatbot"},
+    note:"Adani Electricity runs streetlights in the suburbs. The chat assistant on its Contact Us page has a Street Light Complaint option, and 19122 is its round-the-clock helpline.",
+    ch:[BMC_WA,{t:"web",url:"https://www.adanielectricity.com/contact-us",label:"Open Adani Electricity's chat assistant"},
         {t:"tel",num:"19122",label:"Call Adani Electricity"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
   pBest:{xm:"mybmc",x:"myBESTElectric",name:"BEST Undertaking (electricity)",
     note:"Supply faults: 022 2208 5888 for South Mumbai, 022 2414 5888 for North. Billing: 022 2279 9559 South, 022 2419 4549 North. BEST has no central WhatsApp line." + ESC_POWER,
@@ -401,6 +394,7 @@ var VARIANTS = {
   pAdani:{x:"Adani_Elec_Mum",name:"Adani Electricity Mumbai",
     note:"19122 is the round-the-clock helpline. Quote your consumer number." + ESC_POWER,
     ch:[{t:"wa",bot:"adani",num:"919594519122",show:"95945 19122",label:"Start Adani Electricity chatbot"},
+        {t:"mail",addr:"helpdesk.mumbaielectricity@adani.com",label:"Email Adani Electricity"},
         {t:"tel",num:"19122",label:"Call Adani Electricity"}]},
   pTata:{x:"TataPower",name:"Tata Power, Mumbai",
     note:"Tata Power has no confirmed WhatsApp complaint line. Email gives you a dated record." + ESC_POWER,
@@ -461,8 +455,8 @@ var LOCS = [
 var PINS = {
   "400001":"A","400005":"A","400020":"A","400021":"A","400023":"A","400032":"A","400039":"A",
   "400003":"B","400009":"B","400002":"C",
-  "400004":"D","400006":"D","400007":"D","400026":"D","400034":"D","400035":"D","400036":"D",
-  "400008":["D","E"],"400010":"E","400011":"E","400027":"E","400033":["E","F/S"],
+  "400004":["D","C"],"400006":"D","400007":"D","400026":"D","400034":"D","400035":"D","400036":"D",
+  "400008":["D","E"],"400010":"E","400011":["E","G/S"],"400027":"E","400033":["E","F/S"],
   "400012":"F/S","400015":"F/S","400014":["F/N","F/S","G/N"],
   "400019":"F/N","400022":"F/N","400031":"F/N","400037":"F/N",
   "400016":"G/N","400017":"G/N","400028":"G/N",
@@ -477,9 +471,9 @@ var PINS = {
   "400075":"N","400077":"N","400084":"N","400086":"N",
   "400064":"P/N","400095":"P/N","400097":"P/N",
   "400062":"P/S","400063":"P/S","400065":"P/S","400104":"P/S",
-  "400066":"R/C","400091":"R/C","400092":"R/C","400103":"R/C",
+  "400066":"R/C","400091":"R/C","400092":"R/C","400103":["R/C","R/N"],
   "400068":"R/N","400067":"R/S","400101":"R/S",
-  "400042":"S","400076":"S","400078":"S","400079":"S","400083":"S","400087":"S",
+  "400042":"S","400076":"S","400078":"S","400079":["S","N"],"400083":"S","400087":"S",
   "400080":"T","400081":"T","400082":"T"
 };
 function wardFrom(text){
@@ -525,7 +519,7 @@ function agencyFor(key, v){
     if(!m && !z){ return base; }
     var r = RTO[m ? m[1] : z];
     return {x:"MMVD_RTO", name:r[0], note:(m ? "This plate is registered with " + r[0] + ", which holds that driver's permit and can suspend it."
-        : "No Mumbai plate code was recognised, so this goes to " + r[0] + ", which covers the area where it happened.") + (r[1] ? "" : " This RTO's helpline number is not on WhatsApp, so email is the written route. Try the helpline during office hours.") + " If you get no reply, the state toll-free line takes complaints for the whole region.",
+        : "No Mumbai plate code was recognised, so this goes to " + r[0] + ", which covers the area where it happened.") + (r[1] ? "" : " Email is the written route.") + " If you get no reply, the state toll-free line takes complaints for the whole region.",
       ch:(r[1] ? [{t:"wa",num:r[1],show:r[2],label:"Send on WhatsApp to " + r[0]}] : []).concat([{t:"mail",addr:r[3],label:"Email " + r[0]}],
           r[4] ? [{t:"tel",num:r[4],show:r[2],label:"Call " + r[0] + " helpline"}] : [],
           [{t:"tel",num:"1800220110",show:"1800 220 110",label:"Call state auto and taxi helpline"}])};
@@ -826,7 +820,7 @@ function renderIssue(){
     who.appendChild(ol);
     who.appendChild(el("div", null, "Fill the details once. Step 3 writes a separate message for each office."));
   }
-  var pw = el("div"); pw.appendChild(el("span", {"class":"pill"}, "Checked 11 Nov 2026")); who.appendChild(pw);
+  var pw = el("div"); pw.appendChild(el("span", {"class":"pill"}, "Checked 12 Nov 2026")); who.appendChild(pw);
 
   var keep = {};
   (cur.x || []).forEach(function(key){ keep[key] = val("x-" + X[key].id); });
@@ -867,7 +861,7 @@ function fillGeo(){
     if(!e){ return; }
     if(e.value === "" || e.value === autoGeo[k]){ e.value = g[k] || ""; autoGeo[k] = e.value; }
     if(!h){ return; }
-    if(e.value && e.value === autoGeo[k]){ h.textContent = "Worked out from " + g.name + " in your location. Change it if that is wrong."; }
+    if(e.value && e.value === autoGeo[k]){ h.textContent = "Best match for " + g.name + ". Pin codes and wards do not line up exactly, so change it if you know your ward is different."; }
     else if(e.value){ h.textContent = ""; }
     else if(g.amb){ h.textContent = "Your location (" + g.name + ") spans more than one ward. Add East or West, a pin code or a nearby area name and this fills itself."; }
     else{ h.textContent = "Type your pin code or area in the location box (for example 400053, or Andheri West) and this fills itself."; }
