@@ -222,13 +222,6 @@ var PHOTO_STEP = "When it asks for a photo: tap the camera icon and send it.";
 var PASTE_STEP = "If it asks you to describe the problem, press and hold the message box and tap Paste. Your message is already copied.";
 var BOT = {
   bmc: function(issue){
-    if(issue.kw){
-      return {start:issue.kw, steps:[
-        "Send the single word " + issue.kw + ". BMC has announced it as the shortcut for this complaint.",
-        "If it asks for a language first, tap English, then send " + issue.kw + " again.",
-        LOC_STEP, PHOTO_STEP, PASTE_STEP,
-        "Save the complaint number it sends. You need it to follow up."]};
-    }
     return {start:"Hi", steps:[
       "Send the Hi, then tap English (or Marathi).",
       issue.bopt ? "Tap the " + issue.bopt + " option. BMC added it to this chatbot in June 2026."
@@ -669,11 +662,11 @@ var MARG_CAT = {
 var CATS = ["Roads","Air and dust","Garbage","Water, drains, power","Traffic","Safety and noise","Buildings","Shops and food","Environment","Govt services","Other","Phone, gas, money"];
 
 var ISSUES = [
- {c:0,l:"Pothole",a:"bmc",kw:"Pothole",ask:"Fill the pothole properly and confirm with a photo.",k:"pothole crater khadda khadde gaddha gadda khadda"},
+ {c:0,l:"Pothole",a:"bmc",ask:"Fill the pothole properly and confirm with a photo.",k:"pothole crater khadda khadde gaddha gadda khadda"},
  {c:0,l:"Bad road surface or failed repair",a:"bmc",ask:"Inspect and resurface this stretch.",k:"uneven bumpy patch resurfac resurface quality paver concrete tar asphalt sinking sadak rasta kharab"},
  {c:0,l:"Broken or missing footpath",a:"bmc",ask:"Repair the footpath so it is safe to walk on.",k:"footpath pavement sidewalk slab tiles walkway"},
  {c:0,l:"Footpath blocked",a:"bmc",ask:"Clear the footpath for pedestrians.",w:"BMC removes hawkers, stalls and debris.",also:[["traffic","Only if vehicles are parked on the footpath.","Challan and remove the vehicles parked on the footpath."]],k:"hawker encroach stall vendor feriwala block blocked thela"},
- {c:0,l:"Open or broken manhole",urgent:true,a:"bmcManhole",kw:"Manhole",ask:"Cover it immediately. It is a danger to life.",k:"manhole chamber dhakkan"},
+ {c:0,l:"Open or broken manhole",urgent:true,a:"bmcManhole",ask:"Cover it immediately. It is a danger to life.",k:"manhole chamber dhakkan"},
  {c:0,l:"Road dug up and left open",a:"bmc",x:["site"],ask:"Close the trench and restore the road surface.",k:"trench dug digging excavat excavate cable khod khuda"},
  {c:0,l:"Streetlight not working",a:"light",x:["area","pole"],ask:"Restore the streetlight. The stretch is unsafe after dark.",k:"streetlight street-light lamp dark batti andhera pole"},
 
@@ -802,7 +795,6 @@ function shortName(name){ return name.split(",")[0].split(" (")[0]; }
 
 function compose(issue, v, part, others){
   var L = [];
-  if(issue.kw && part.a === issue.a){ L.push(issue.kw); L.push(""); }
   L.push("Complaint: " + issue.l);
   L.push("Location: " + (v.loc || "[add exact location]"));
   if(v.land){ L.push("Landmark: " + v.land); }
