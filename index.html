@@ -230,7 +230,8 @@ var BOT = {
     }
     return {start:"Hi", steps:[
       "Send the Hi, then tap English (or Marathi).",
-      "Follow its menu to the complaint section and tap the type closest to: " + issue.l + ".",
+      issue.bopt ? "Tap the " + issue.bopt + " option. BMC added it to this chatbot in June 2026."
+                 : "Follow its menu to the complaint section and tap the type closest to: " + issue.l + ".",
       LOC_STEP, PHOTO_STEP, PASTE_STEP,
       "Save the complaint number it sends. If it goes quiet, send Hi to restart."]};
   },
@@ -258,8 +259,8 @@ var BOT = {
 
 var AG = {
   bmc:{x:"mybmc",name:"BMC, your ward office",
-    note:"This number is BMC's chatbot. It ignores a typed-out complaint and only moves when you tap its buttons, so follow the steps under the button. You can also file in the MyBMC MARG app.",
-    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"web",url:"https://www.mcgm.gov.in",label:"Open BMC portal"}]},
+    note:"This number is BMC's chatbot. It ignores a typed-out complaint and only moves when you tap its buttons, so follow the steps under the button. You can also file on BMC's MARG portal or in the MyBMC MARG app, which list 114 complaint types and give a tracking number. A post tagging @mybmc on X also gets registered on MARG.",
+    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"web",url:"https://marg.mcgm.gov.in/MARG/welcomePage.html",label:"Open BMC's MARG complaint portal"}]},
   bmcManhole:{x:"mybmc",name:"BMC, manhole desk",
     note:"BMC runs a separate chatbot only for open, damaged or missing manhole covers.",
     ch:[{t:"wa",bot:"manhole",num:"919324500600",show:"93245 00600",label:"Start BMC's manhole chatbot"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
@@ -618,7 +619,6 @@ var X = {
   gasco:{id:"gasco",label:"Your gas company",sel:["Indane","Bharatgas","HP Gas","Mahanagar Gas (piped)"],none:"Choose"},
   gascons:{id:"gascons",label:"Consumer or customer number",ph:"From your gas book or bill",opt:true},
   hosp:{id:"hosp",label:"Hospital or dispensary name",ph:"And the ward or OPD, if you know it"},
-  ptax:{id:"ptax",label:"Property account number",ph:"From your property tax bill",opt:true},
   oper:{id:"oper",label:"Operator, and your number or account ID",ph:"Airtel, 98xxxxxx10"},
   dock:{id:"dock",label:"Complaint number the company gave you",ph:"And the date you complained",opt:true},
   bankn:{id:"bankn",label:"Bank or company, and branch",ph:""},
@@ -698,10 +698,9 @@ var ISSUES = [
  {c:8,l:"Wild animal in danger, trapped or being sold",urgent:true,a:"forest",ask:"Send a rescue team and act against whoever is responsible.",k:"wildlife wild snake leopard monkey parrot turtle poach owl"},
  {c:8,l:"Cruelty to an animal",urgent:true,a:"police",ask:"Register my complaint under the Prevention of Cruelty to Animals Act.",k:"cruelty beating beaten abuse abused torture tortured poison"},
  {c:0,l:"Metro or flyover construction site hazard",a:"mmrda",x:["site"],w:"MMRDA is responsible for the site and its contractor.",also:[["bmc","For dust, debris or a damaged road around the site.","Inspect the site and enforce dust, debris and road restoration rules on the contractor."]],rule:"BMC's air pollution mitigation guidelines require above-ground metro works to have 25 foot barricading, covers, and smog guns or sprinklers.",ask:"Inspect the site, make it safe and reply with the action taken.",k:"mmrda pillar girder barricade barricading crane flyover viaduct metro-work"},
- {c:0,l:"Illegal hawkers or stalls",a:"bmc",ask:"Remove the unlicensed hawkers or stalls and keep the spot clear.",w:"BMC's Licence Department licenses hawkers and removes unlicensed ones.",k:"hawker hawkers feriwala pheriwala vendor vendors stall stalls thela handcart"},
+ {c:0,l:"Illegal hawkers or stalls",a:"bmc",bopt:"Illegal Hawking",ask:"Remove the unlicensed hawkers or stalls and keep the spot clear.",w:"BMC's Licence Department licenses hawkers and removes unlicensed ones.",k:"hawker hawkers feriwala pheriwala vendor vendors stall stalls thela handcart"},
  {c:8,l:"Garden, park or playground badly kept or locked",a:"bmc",ask:"Inspect and repair this garden or playground and keep it open during its hours.",w:"BMC's Garden Department maintains public gardens, recreation grounds and playgrounds.",k:"garden park playground maidan udyan bagh swing slide bench jogging"},
  {c:9,l:"BMC hospital or dispensary problem",a:"bmc",x:["hosp"],ask:"Refer this to the Executive Health Officer, look into it and tell me the action taken.",w:"BMC's Public Health Department runs the municipal hospitals, dispensaries and health posts.",k:"hospital dispensary doctor nurse opd patient kem nair cooper maternity"},
- {c:9,l:"Property tax bill or assessment problem",a:"bmc",nophoto:true,x:["ptax"],ask:"Refer this to the Assistant Assessor and Collector of my ward, correct the record and send a corrected bill.",w:"BMC's Assessment and Collection Department handles property tax. The ward's Assistant Assessor and Collector corrects bills.",k:"property tax assessment mutation"},
  {c:7,l:"Chemist or medical store problem",a:"fda",x:["unit","prod"],ask:"Inspect this medical store and act on violations of the drug rules.",w:"FDA Maharashtra regulates chemists, and its helpline takes reports of fake medicines.",k:"chemist pharmacy medical medicine medicines tablet tablets prescription pharmacist drug drugstore"},
  {c:4,l:"App cab or bike taxi problem (Ola, Uber, Rapido)",a:"rto",x:["veh","zone","fare"],ask:"Act against this driver's permit and take it up with the app company.",w:"Report it in the app first and keep the ticket number. The RTO regulates app cabs, and the state toll-free line takes Ola and Uber complaints.",k:"ola uber rapido aggregator app cancel cancelled cancellation surge ride"},
  {c:5,l:"Harassment or feeling unsafe (women's safety)",urgent:true,a:"women",ask:"Send help and act against the person.",k:"harass harassment harassed stalk stalking stalker followed following molest molested molestation eve-teasing grope groped women woman girl lewd"},
