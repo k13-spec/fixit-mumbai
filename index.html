@@ -318,6 +318,30 @@ var AG = {
   cyber:{x:"MahaCyber1",x2:"MumbaiPolice",xwarn:"Careful: never put account numbers, OTPs or transaction IDs in a public post. Fraudsters watch these posts and pose as helpdesks in the replies. Trust only replies from the official handle.",name:"National Cyber Crime helpline",callFirst:true,
     note:"Call first. Every hour matters for freezing the money. Then file online with the same details, and tell your bank.",
     ch:[{t:"tel",num:"1930",label:"Call cyber fraud helpline"},{t:"web",url:"https://cybercrime.gov.in",label:"Open cybercrime.gov.in"}]},
+  women:{x:"MumbaiPolice",name:"Mumbai Police women's helpline",callFirst:true,
+    xwarn:"Careful: a public post shows where you are. Post only once you are safe.",
+    note:"Call first. 103 is Mumbai Police's women's helpline, and 112 is the police emergency line. On a train or at a station, 139 reaches the Railway Protection Force. The written routes below are for reporting it afterwards.",
+    ch:[{t:"tel",num:"103",label:"Call women's helpline"},{t:"tel",num:"112",label:"Call police emergency line"},
+        {t:"tel",num:"139",label:"On a train or at a station: call 139"},
+        {t:"sms",num:"7738133133",show:"77381 33133",label:"Send by SMS to Mumbai Police"},
+        {t:"web",url:"https://mumbaipolice.gov.in/OnlineComplaints?ps_id=0",label:"Open Mumbai Police online complaint"}]},
+  lpg:{name:"Your gas company",
+    note:"Pick your gas company in step 2 to get its complaint channels. If you smell gas from a cylinder, 1906 is the round-the-clock LPG leak helpline for all three cylinder companies.",
+    ch:[{t:"tel",num:"1906",label:"Smell gas? Call LPG leak helpline"}]},
+  telecom:{name:"Your phone company, then the Department of Telecommunications",
+    note:"There are three steps, in this order. One: complain to the company's customer care and note the complaint number. Two: if that fails, appeal to the company's Appellate Authority. TRAI's directory lists each one: pick your operator and Mumbai. Three: if both fail, the Department of Telecommunications' grievance cell takes it up through the central grievance portal or on 1063. TRAI itself does not take up individual complaints.",
+    ch:[{t:"web",url:"https://www.trai.gov.in/consumer-info/cgr/appellate-authority",label:"Find your operator's Appellate Authority"},
+        {t:"web",url:"https://pgportal.gov.in",label:"Open central grievance portal (after both steps)"},
+        {t:"tel",num:"1063",label:"Call DoT grievance cell"}]},
+  rbi:{name:"RBI Ombudsman",
+    note:"Complain to your bank, card or loan company first and keep its complaint number. If you get no reply in 30 days, or the reply does not settle it, file with the RBI Ombudsman within the next 90 days. For a failed UPI payment, raise it in the payment app first, then with your bank. 14448 gives guidance and status only: you cannot file by phone. If money was stolen, that is fraud: use the Online or payment fraud issue and call 1930.",
+    ch:[{t:"mail",addr:"crpc@rbi.org.in",label:"Email RBI Ombudsman"},{t:"web",url:"https://cms.rbi.org.in",label:"Open RBI complaint portal"},
+        {t:"tel",num:"14448",label:"Call RBI contact centre"}]},
+  irdai:{name:"IRDAI (Bima Bharosa)",
+    note:"Complain to the insurer first. If it is not settled in two weeks, file on IRDAI's Bima Bharosa portal. Only the policyholder or the claimant can file. If the insurer still has not settled it after 30 days, the Insurance Ombudsman hears claims up to Rs 50 lakh, within one year.",
+    ch:[{t:"mail",addr:"complaints@irdai.gov.in",label:"Email IRDAI"},{t:"web",url:"https://bimabharosa.irdai.gov.in",label:"Open Bima Bharosa portal"},
+        {t:"tel",num:"155255",label:"Call IRDAI helpline"},
+        {t:"web",url:"https://cioins.co.in/Complaint/Online",label:"Open Insurance Ombudsman (after 30 days)"}]},
   power:{name:"Your electricity distributor",
     note:"Your bill names the distributor. Pick it in step 2 to get its complaint channels.",ch:[]},
   rera:{name:"MahaRERA",
@@ -374,7 +398,26 @@ var RTO = {
 };
 var SRO = {"A":1,"B":1,"C":1,"D":1,"F/S":1,"F/N":1,"G/S":1,"G/N":1,"M/E":2,"M/W":2,"H/E":2,"H/W":2,"L":2,"K/E":3,"K/W":3,"S":3,"N":3,"P/S":3,"P/N":4,"R/N":4,"R/S":4,"T":4};
 var ESC_POWER = " No fix in 3 days for a supply fault, or 15 days for anything else? Take it to the distributor's Consumer Grievance Redressal Forum, then to the Electricity Ombudsman within 60 days of the forum's order.";
+var LEAK = {t:"tel",num:"1906",label:"Smell gas? Call LPG leak helpline"};
 var VARIANTS = {
+  gIndane:{xm:"MoPNG_eSeva",x:"IndianOilcl",name:"Indane (Indian Oil)",
+    note:"Indian Oil's complaint portal gives a tracking number. Keep your consumer number and distributor's name ready. 1906 is the round-the-clock leak helpline.",
+    ch:[{t:"web",url:"https://cx.indianoil.in/EPICIOCL/faces/GrievanceMainPage.jspx",label:"Open Indian Oil complaint portal"},
+        {t:"tel",num:"18002333555",show:"1800 2333 555",label:"Call Indane toll-free"},LEAK]},
+  gBharat:{xm:"MoPNG_eSeva",x:"BPCLimited",name:"Bharatgas (BPCL)",
+    note:"BPCL's complaint form is on its site, and SmartLine is its toll-free number. Keep your consumer number and distributor's name ready. 1906 is the round-the-clock leak helpline.",
+    ch:[{t:"web",url:"https://www.bharatpetroleum.in/feedback-complaint.aspx",label:"Open BPCL complaint form"},
+        {t:"tel",num:"1800224344",show:"1800 22 4344",label:"Call BPCL SmartLine"},LEAK]},
+  gHP:{xm:"MoPNG_eSeva",x:"HPCL",name:"HP Gas (HPCL)",
+    note:"HPCL's complaints page takes it online, and its toll-free line is open 8 am to 8 pm. Keep your consumer number and distributor's name ready. 1906 is the round-the-clock leak helpline.",
+    ch:[{t:"web",url:"https://hindustanpetroleum.com/pages/Complaints-and-Feedback",label:"Open HPCL complaints page"},
+        {t:"tel",num:"18002333555",show:"1800 2333 555",label:"Call HP Gas toll-free"},LEAK]},
+  gMGL:{x:"mahanagargas",name:"Mahanagar Gas (piped gas)",
+    note:"For a leak, call the emergency number: it runs round the clock. Customer care is open 8 am to 10 pm for billing and service.",
+    ch:[{t:"mail",addr:"support@mahanagargas.com",label:"Email Mahanagar Gas"},
+        {t:"web",url:"https://m.mahanagargas.com/Billing/Complaint.aspx",label:"Open Mahanagar Gas complaint form"},
+        {t:"tel",num:"18002669944",show:"1800 266 9944",label:"Gas leak: call MGL emergency"},
+        {t:"tel",num:"02268674500",show:"022 6867 4500",label:"Call MGL customer care"}]},
   lightBest:{xm:"mybmc",x:"myBESTElectric",name:"BEST street lighting, with BMC",
     note:"BEST runs streetlights in the island city. Its street-lighting desk takes calls. South Mumbai: 022 2377 1839 by day, 022 2206 6611 at night. North of there up to Sion and Mahim: 022 2410 1517 by day, 022 2414 6611 at night.",
     ch:[BMC_WA,{t:"tel",num:"02223771839",show:"022 2377 1839",label:"Call BEST street lighting, South (day)"},
@@ -545,6 +588,7 @@ function agencyFor(key, v){
   }
   if(key === "light"){ return e.area === "Island city" ? VARIANTS.lightBest : e.area === "Suburbs" ? VARIANTS.lightAdani : base; }
   if(key === "power"){ return {"BEST":VARIANTS.pBest,"Adani Electricity":VARIANTS.pAdani,"Tata Power":VARIANTS.pTata,"Mahavitaran":VARIANTS.pMsedcl}[e.disco] || base; }
+  if(key === "lpg"){ return {"Indane":VARIANTS.gIndane,"Bharatgas":VARIANTS.gBharat,"HP Gas":VARIANTS.gHP,"Mahanagar Gas (piped)":VARIANTS.gMGL}[e.gasco] || base; }
   if(key === "metro"){ return {"Line 1":VARIANTS.m1,"Line 2A or 7":VARIANTS.m27,"Line 3":VARIANTS.m3}[e.line] || base; }
   return base;
 }
@@ -571,6 +615,14 @@ var X = {
   card:{id:"card",label:"Ration card number and shop",ph:"",opt:true},
   ward:{id:"ward",label:"BMC ward",opt:true,sel:["A","B","C","D","E","F/N","F/S","G/N","G/S","H/E","H/W","K/E","K/W","L","M/E","M/W","N","P/N","P/S","R/C","R/N","R/S","S","T"],none:"Not sure"},
   area:{id:"area",label:"Which part of Mumbai",sel:["Island city","Suburbs"],none:"Not sure"},
+  gasco:{id:"gasco",label:"Your gas company",sel:["Indane","Bharatgas","HP Gas","Mahanagar Gas (piped)"],none:"Choose"},
+  gascons:{id:"gascons",label:"Consumer or customer number",ph:"From your gas book or bill",opt:true},
+  hosp:{id:"hosp",label:"Hospital or dispensary name",ph:"And the ward or OPD, if you know it"},
+  ptax:{id:"ptax",label:"Property account number",ph:"From your property tax bill",opt:true},
+  oper:{id:"oper",label:"Operator, and your number or account ID",ph:"Airtel, 98xxxxxx10"},
+  dock:{id:"dock",label:"Complaint number the company gave you",ph:"And the date you complained",opt:true},
+  bankn:{id:"bankn",label:"Bank or company, and branch",ph:""},
+  insr:{id:"insr",label:"Insurer and policy or claim number",ph:""},
   disco:{id:"disco",label:"Electricity company on your bill",sel:["BEST","Adani Electricity","Tata Power","Mahavitaran"],none:"Choose"},
   zone:{id:"zone",label:"Where it happened",opt:true,sel:["Island city","Bandra to Jogeshwari","Goregaon to Dahisar","Kurla to Mulund or Mankhurd"],none:"Not sure"},
   rline:{id:"rline",label:"Railway line",opt:true,sel:["Western","Central or Harbour"],none:"Not sure"},
@@ -578,7 +630,7 @@ var X = {
 };
 
 var AIR = "BMC's air pollution mitigation guidelines for construction sites";
-var CATS = ["Roads","Air and dust","Garbage","Water, drains, power","Traffic","Safety and noise","Buildings","Shops and food","Environment","Govt services","Other"];
+var CATS = ["Roads","Air and dust","Garbage","Water, drains, power","Traffic","Safety and noise","Buildings","Shops and food","Environment","Govt services","Other","Phone, gas, money"];
 
 var ISSUES = [
  {c:0,l:"Pothole",a:"bmc",kw:"Pothole",ask:"Fill the pothole properly and confirm with a photo.",k:"pothole crater khadda khadde gaddha gadda khadda"},
@@ -611,13 +663,13 @@ var ISSUES = [
  {c:4,l:"Illegal parking or abandoned vehicle",a:"traffic",x:["veh"],ask:"Tow or challan the vehicle.",w:"Traffic Police challan and tow.",also:[["bmc","Only if the vehicle looks abandoned. BMC removes those.","Remove the abandoned vehicle from the road."]],k:"parking parked abandoned double-park tow car bike scooter tempo"},
  {c:4,l:"Signal not working",a:"traffic",ask:"Repair the signal and post a constable meanwhile.",k:"signal traffic-light"},
  {c:4,l:"Wrong-side or rash driving",a:"traffic",x:["veh"],ask:"Issue a challan to the vehicle.",k:"wrong-side wrong rash speeding helmet triple jumped honking horn"},
- {c:4,l:"Auto or taxi refusal or overcharging",a:"traffic",x:["veh","zone","fare"],ask:"Fine the driver for refusal or overcharging.",w:"Traffic Police can fine the driver.",also:[["rto","The RTO can suspend the driver's permit or licence.","Act against the driver's permit and licence."]],k:"auto rickshaw riksha taxi cab kaali-peeli refused refuse refusal meter overcharg overcharge bhada ola uber"},
+ {c:4,l:"Auto or taxi refusal or overcharging",a:"traffic",x:["veh","zone","fare"],ask:"Fine the driver for refusal or overcharging.",w:"Traffic Police can fine the driver.",also:[["rto","The RTO can suspend the driver's permit or licence.","Act against the driver's permit and licence."]],k:"auto rickshaw riksha taxi cab kaali-peeli refused refuse refusal meter overcharg overcharge bhada"},
  {c:4,l:"BEST bus problem",a:"best",x:["route"],ask:"Look into this and reply with the action taken.",k:"bus conductor depot"},
  {c:4,l:"Railway station or train problem",a:"rail",x:["rline","train"],ask:"Resolve this and share a reference number.",k:"railway train platform fob coach"},
 
  {c:5,l:"Loudspeaker or late-night construction noise",urgent:true,a:"noise",conf:true,ask:"Stop the noise. It is beyond permitted hours.",w:"Police can stop it on the spot.",also:[["bmc","For construction noise or a repeat problem. BMC's ward office can act against the site.","Act against the source for breaching noise rules and permitted hours."]],k:"noise loud loudspeaker dj music speaker awaaz awaz shor noisy drilling"},
  {c:5,l:"Fire hazard in a building",a:"fire",x:["unit"],ask:"Inspect the premises for fire safety compliance.",k:"fire exit extinguisher wiring hazard cylinder"},
- {c:5,l:"Unsafe spot or illegal activity",a:"police",ask:"Increase patrolling and act on this.",k:"harass drugs liquor gambling unsafe stalking theft eve-teasing drunk"},
+ {c:5,l:"Unsafe spot or illegal activity",a:"police",ask:"Increase patrolling and act on this.",k:"drugs liquor gambling unsafe theft drunk robbery snatching"},
  {c:5,l:"Online or payment fraud",xnoloc:true,urgent:true,a:"cyber",xask:"Freeze the transaction and help with my complaint #",x:["txn"],ask:"Freeze the transaction and register my complaint.",k:"fraud upi scam otp phishing hacked cheated"},
 
  {c:6,l:"Illegal construction",a:"bmc",x:["site"],ask:"Inspect and act against the unauthorised work.",k:"illegal unauthorised unauthorized extension extra floor encroachment"},
@@ -628,7 +680,7 @@ var ISSUES = [
  {c:6,l:"Housing society mismanagement",a:"coop",x:["soc"],ask:"Direct the managing committee to comply.",k:"committee secretary chairman maintenance accounts agm chs"},
 
  {c:7,l:"Dirty restaurant, eatery or food stall",a:"fda",x:["unit"],ask:"Inspect the kitchen and premises for hygiene under the food safety rules and act on violations.",w:"FDA Maharashtra inspects food businesses for hygiene and can issue an improvement notice or suspend the food licence.",also:[["bmc","BMC's Public Health Department gives every eating house its health licence under section 394 of the Mumbai Municipal Corporation Act. The ward's Medical Officer of Health can inspect it and suspend or cancel that licence.","Ask the ward Medical Officer of Health to inspect this eating house for hygiene and act under its section 394 health licence."]],k:"restaurant hotel dhaba eatery cafe canteen kitchen stall mess bar unhygienic hygiene dirty filthy ganda gandagi"},
- {c:7,l:"Unsafe or adulterated food",a:"fda",x:["unit","prod"],ask:"Inspect the outlet and test the product.",w:"FDA inspects the outlet and tests the product.",also:[["consumer","Only if you also want a refund or compensation.","Get me a refund from the seller and confirm in writing."]],k:"food restaurant hotel adulterat adulterate adulterated expired stale hygiene insect cockroach medicine sweet milk"},
+ {c:7,l:"Unsafe or adulterated food",a:"fda",x:["unit","prod"],ask:"Inspect the outlet and test the product.",w:"FDA inspects the outlet and tests the product.",also:[["consumer","Only if you also want a refund or compensation.","Get me a refund from the seller and confirm in writing."]],k:"food restaurant hotel adulterat adulterate adulterated expired stale hygiene insect cockroach sweet milk"},
  {c:7,l:"Any seller or service dispute",a:"consumer",x:["unit","bill"],ask:"Resolve my grievance and confirm in writing.",k:"refund defective warranty seller delivery order replacement customer mrp overcharged weight charged shop shopkeeper packet price bill"},
 
  {c:8,l:"Mangrove cutting or wetland dumping",a:"mangrove",x:["area"],ask:"Stop the activity and restore the site.",w:"The Mangrove Cell protects notified mangrove land.",also:[["collector","Much mangrove land is private or revenue land, where the Collector acts.","Inspect the site, stop the activity and order restoration."],["bmc","Only if debris or garbage is being dumped.","Stop the dumping and remove the debris."]],k:"mangrove wetland creek reclamation khadi"},
@@ -646,6 +698,18 @@ var ISSUES = [
  {c:8,l:"Wild animal in danger, trapped or being sold",urgent:true,a:"forest",ask:"Send a rescue team and act against whoever is responsible.",k:"wildlife wild snake leopard monkey parrot turtle poach owl"},
  {c:8,l:"Cruelty to an animal",urgent:true,a:"police",ask:"Register my complaint under the Prevention of Cruelty to Animals Act.",k:"cruelty beating beaten abuse abused torture tortured poison"},
  {c:0,l:"Metro or flyover construction site hazard",a:"mmrda",x:["site"],w:"MMRDA is responsible for the site and its contractor.",also:[["bmc","For dust, debris or a damaged road around the site.","Inspect the site and enforce dust, debris and road restoration rules on the contractor."]],rule:"BMC's air pollution mitigation guidelines require above-ground metro works to have 25 foot barricading, covers, and smog guns or sprinklers.",ask:"Inspect the site, make it safe and reply with the action taken.",k:"mmrda pillar girder barricade barricading crane flyover viaduct metro-work"},
+ {c:0,l:"Illegal hawkers or stalls",a:"bmc",ask:"Remove the unlicensed hawkers or stalls and keep the spot clear.",w:"BMC's Licence Department licenses hawkers and removes unlicensed ones.",k:"hawker hawkers feriwala pheriwala vendor vendors stall stalls thela handcart"},
+ {c:8,l:"Garden, park or playground badly kept or locked",a:"bmc",ask:"Inspect and repair this garden or playground and keep it open during its hours.",w:"BMC's Garden Department maintains public gardens, recreation grounds and playgrounds.",k:"garden park playground maidan udyan bagh swing slide bench jogging"},
+ {c:9,l:"BMC hospital or dispensary problem",a:"bmc",x:["hosp"],ask:"Refer this to the Executive Health Officer, look into it and tell me the action taken.",w:"BMC's Public Health Department runs the municipal hospitals, dispensaries and health posts.",k:"hospital dispensary doctor nurse opd patient kem nair cooper maternity"},
+ {c:9,l:"Property tax bill or assessment problem",a:"bmc",nophoto:true,x:["ptax"],ask:"Refer this to the Assistant Assessor and Collector of my ward, correct the record and send a corrected bill.",w:"BMC's Assessment and Collection Department handles property tax. The ward's Assistant Assessor and Collector corrects bills.",k:"property tax assessment mutation"},
+ {c:7,l:"Chemist or medical store problem",a:"fda",x:["unit","prod"],ask:"Inspect this medical store and act on violations of the drug rules.",w:"FDA Maharashtra regulates chemists, and its helpline takes reports of fake medicines.",k:"chemist pharmacy medical medicine medicines tablet tablets prescription pharmacist drug drugstore"},
+ {c:4,l:"App cab or bike taxi problem (Ola, Uber, Rapido)",a:"rto",x:["veh","zone","fare"],ask:"Act against this driver's permit and take it up with the app company.",w:"Report it in the app first and keep the ticket number. The RTO regulates app cabs, and the state toll-free line takes Ola and Uber complaints.",k:"ola uber rapido aggregator app cancel cancelled cancellation surge ride"},
+ {c:5,l:"Harassment or feeling unsafe (women's safety)",urgent:true,a:"women",ask:"Send help and act against the person.",k:"harass harassment harassed stalk stalking stalker followed following molest molested molestation eve-teasing grope groped women woman girl lewd"},
+ {c:5,l:"Gas leak (cylinder or piped gas)",urgent:true,a:"lpg",x:["gasco"],ask:"Send a technician immediately.",k:"leak leakage smell"},
+ {c:11,l:"LPG cylinder or piped gas problem",a:"lpg",nophoto:true,x:["gasco","gascons"],ask:"Resolve this and confirm with a complaint number.",k:"lpg gas cylinder indane bharatgas refill delivery underweight regulator png piped mahanagar mgl"},
+ {c:11,l:"Mobile or broadband service problem",a:"telecom",nophoto:true,x:["oper","dock"],ask:"Resolve this complaint, which customer care has not resolved.",k:"mobile network signal broadband internet wifi fiber fibre recharge sim porting jio airtel vodafone bsnl mtnl"},
+ {c:11,l:"Bank, UPI, card or loan complaint",a:"rbi",nophoto:true,x:["bankn","dock"],ask:"Direct the bank or company to resolve this and compensate me for the loss.",k:"bank upi card credit debit loan emi nbfc recovery charges account atm refund failed neft"},
+ {c:11,l:"Insurance claim or policy complaint",a:"irdai",nophoto:true,x:["insr","dock"],ask:"Direct the insurer to settle this.",k:"insurance insurer claim policy premium mediclaim cashless lic"},
  {c:10,l:"Any other civic problem",a:"bmc",ask:"Look into this and reply with the action taken.",k:""},
  {c:10,l:"Problem with a state government office",a:"state",x:["dept"],ask:"Resolve this and reply with the action taken.",k:"mantralaya collector tehsildar talathi ration government office"}
 ];
@@ -718,7 +782,7 @@ function compose(issue, v, part, others){
   L.push("Request: " + part.ask + " Please share a complaint number.");
   if(others && others.length){ L.push("Also reported to: " + others.join("; ") + "."); }
   if(issue.conf){ L.push("Please keep my identity confidential, as the Bombay High Court directed for noise complaints in January 2025."); }
-  L.push("Photo attached.");
+  if(!issue.nophoto){ L.push("Photo attached."); }
   if(v.name){ L.push(""); L.push("From: " + v.name); }
   return L.join("\n");
 }
