@@ -1130,7 +1130,7 @@ function renderActions(ag, ta, box, note, ready, more, xt){
     var isMarg = c.url.indexOf("marg.mcgm.gov.in") > -1;
     a.appendChild(el("small", null, isMarg ? (MARG_CAT[cur.l] ? "Category to pick: " + MARG_CAT[cur.l] : "Pick the closest of its categories") : c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
     a.addEventListener("click", after); box.appendChild(a);
-    if(isMarg){ box.appendChild(el("p", {"class":"tip"}, "No login needed: it opens as a guest. It accepts only a geotagged photo, so switch on location tags in your camera before you take the picture. Paste your copied message as the description.")); }
+    if(isMarg){ box.appendChild(el("p", {"class":"tip"}, "It signs you in with your mobile number and an OTP. It accepts only a geotagged photo, so switch on location tags in your camera before you take the picture. Paste your copied message as the description.")); }
   });
   lead = false;
   addX();
