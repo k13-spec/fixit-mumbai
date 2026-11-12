@@ -1072,7 +1072,7 @@ function renderActions(ag, ta, box, note, ready, more, xt){
         try{ navigator.clipboard.writeText(text).then(function(){ bsm.textContent = "Message copied. Follow the steps below in WhatsApp."; }, function(){}); }catch(e){}
       }); }
       guard(a); box.appendChild(a);
-      box.appendChild(el("p", {"class":"tip"}, "This is a menu chatbot. What to press:"));
+      box.appendChild(el("p", {"class":"tip"}, "This is a menu chatbot. Answer only what it asks, one step at a time. If you send your complaint before it asks for details, it replies that the response is invalid. What to press:"));
       var ol = el("ol", {"class":"tip steps"});
       b.steps.forEach(function(t){ ol.appendChild(el("li", null, t)); });
       box.appendChild(ol);
