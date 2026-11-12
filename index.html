@@ -211,6 +211,7 @@ footer .disc{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-tr
 (function(){
 "use strict";
 
+var MARG_WEB = {t:"web",url:"https://marg.mcgm.gov.in/MARG/welcomePage.html",label:"Open BMC's MARG complaint portal"};
 var BMC_WA = {t:"wa",bot:"bmc",num:"918999228999",show:"89992 28999",label:"Start BMC's WhatsApp chatbot"};
 var TP_WA = {t:"wa",num:"918454999999",show:"84549 99999",label:"Send on WhatsApp to Traffic Police"};
 var STATE_WEB = {t:"web",url:"https://grievances.maharashtra.gov.in",label:"Open state grievance portal"};
@@ -260,13 +261,13 @@ var BOT = {
 var AG = {
   bmc:{x:"mybmc",name:"BMC, your ward office",
     note:"This number is BMC's chatbot. It ignores a typed-out complaint and only moves when you tap its buttons, so follow the steps under the button. You can also file on BMC's MARG portal or in the MyBMC MARG app, which list 114 complaint types and give a tracking number. A post tagging @mybmc on X also gets registered on MARG.",
-    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"web",url:"https://marg.mcgm.gov.in/MARG/welcomePage.html",label:"Open BMC's MARG complaint portal"}]},
+    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},MARG_WEB]},
   bmcManhole:{x:"mybmc",name:"BMC, manhole desk",
     note:"BMC runs a separate chatbot only for open, damaged or missing manhole covers.",
     ch:[{t:"wa",bot:"manhole",num:"919324500600",show:"93245 00600",label:"Start BMC's manhole chatbot"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
   tree:{x:"mybmc",name:"BMC Tree Authority",
     note:"BMC's 1916 helpline registers tree complaints for the Garden Department. If the chatbot shows no matching option, call 1916. If cutting is under way right now, call the police too.",
-    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"tel",num:"100",label:"Call police (cutting under way)"}]},
+    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"tel",num:"100",label:"Call police (cutting under way)"},MARG_WEB]},
   light:{x:"mybmc",name:"BMC and your electricity distributor",
     note:"Pick your area in step 2 to get the distributor's own streetlight desk. BMC takes the complaint for the whole city and passes it on.",
     ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"}]},
@@ -619,6 +620,7 @@ var X = {
   gasco:{id:"gasco",label:"Your gas company",sel:["Indane","Bharatgas","HP Gas","Mahanagar Gas (piped)"],none:"Choose"},
   gascons:{id:"gascons",label:"Consumer or customer number",ph:"From your gas book or bill",opt:true},
   hosp:{id:"hosp",label:"Hospital or dispensary name",ph:"And the ward or OPD, if you know it"},
+  ptax:{id:"ptax",label:"Property account number",ph:"From your property tax bill",opt:true},
   oper:{id:"oper",label:"Operator, and your number or account ID",ph:"Airtel, 98xxxxxx10"},
   dock:{id:"dock",label:"Complaint number the company gave you",ph:"And the date you complained",opt:true},
   bankn:{id:"bankn",label:"Bank or company, and branch",ph:""},
@@ -630,6 +632,40 @@ var X = {
 };
 
 var AIR = "BMC's air pollution mitigation guidelines for construction sites";
+// Category names exactly as they appear in the Grievance Category list on BMC's MARG portal (seen 12 Nov 2026).
+var MARG_CAT = {
+ "Pothole": "Roads, Footpaths, Streetlights, & Traffic",
+ "Bad road surface or failed repair": "Roads, Footpaths, Streetlights, & Traffic",
+ "Broken or missing footpath": "Roads, Footpaths, Streetlights, & Traffic",
+ "Road dug up and left open": "Roads, Footpaths, Streetlights, & Traffic",
+ "Streetlight not working": "Roads, Footpaths, Streetlights, & Traffic",
+ "Footpath blocked": "Illegal Encroachment & Street Vendors",
+ "Illegal hawkers or stalls": "Illegal Encroachment & Street Vendors",
+ "Construction site dust": "Environmental Pollution (Air, Noise & Water Bodies)",
+ "Demolition without cover or water": "Environmental Pollution (Air, Noise & Water Bodies)",
+ "Uncovered or overloaded debris truck": "Environmental Pollution (Air, Noise & Water Bodies)",
+ "Garbage or leaves being burnt": "Environmental Pollution (Air, Noise & Water Bodies)",
+ "Smoke from a bakery, eatery, plant or factory": "Environmental Pollution (Air, Noise & Water Bodies)",
+ "Loudspeaker or late-night construction noise": "Environmental Pollution (Air, Noise & Water Bodies)",
+ "Sewage or effluent into a river, lake or sea": "Environmental Pollution (Air, Noise & Water Bodies)",
+ "Garbage not collected or dumping spot": "Garbage, Cleanliness & Public Toilets",
+ "Debris dumped on the road": "Garbage, Cleanliness & Public Toilets",
+ "Dirty or broken public toilet": "Garbage, Cleanliness & Public Toilets",
+ "No water or low pressure": "Water Supply",
+ "Contaminated water": "Water Supply",
+ "Leaking or burst pipe": "Water Supply",
+ "Sewage overflow": "Drains & Sewage",
+ "Waterlogging or choked drain": "Drains & Sewage",
+ "Mosquito breeding or rats": "Pest, Mosquito and Rat Control",
+ "Illegal construction": "Unauthorized Construction or Commercial Activity",
+ "Dangerous tree or illegal cutting": "Parks, Gardens, Recreational Facilities & Tree Cutting",
+ "Garden, park or playground badly kept or locked": "Parks, Gardens, Recreational Facilities & Tree Cutting",
+ "Dirty restaurant, eatery or food stall": "Shops, Markets & Food Safety",
+ "Stray dog nuisance": "Stray Animals, Pets, Birds & Wildlife",
+ "BMC hospital or dispensary problem": "Municipal Hospitals & Health Centres",
+ "Property tax bill or assessment problem": "Property Tax, Ownership Records, Tenanted / Leased Municipal Property"
+};
+
 var CATS = ["Roads","Air and dust","Garbage","Water, drains, power","Traffic","Safety and noise","Buildings","Shops and food","Environment","Govt services","Other","Phone, gas, money"];
 
 var ISSUES = [
@@ -701,6 +737,7 @@ var ISSUES = [
  {c:0,l:"Illegal hawkers or stalls",a:"bmc",bopt:"Illegal Hawking",ask:"Remove the unlicensed hawkers or stalls and keep the spot clear.",w:"BMC's Licence Department licenses hawkers and removes unlicensed ones.",k:"hawker hawkers feriwala pheriwala vendor vendors stall stalls thela handcart"},
  {c:8,l:"Garden, park or playground badly kept or locked",a:"bmc",ask:"Inspect and repair this garden or playground and keep it open during its hours.",w:"BMC's Garden Department maintains public gardens, recreation grounds and playgrounds.",k:"garden park playground maidan udyan bagh swing slide bench jogging"},
  {c:9,l:"BMC hospital or dispensary problem",a:"bmc",x:["hosp"],ask:"Refer this to the Executive Health Officer, look into it and tell me the action taken.",w:"BMC's Public Health Department runs the municipal hospitals, dispensaries and health posts.",k:"hospital dispensary doctor nurse opd patient kem nair cooper maternity"},
+ {c:9,l:"Property tax bill or assessment problem",a:"bmc",nobot:true,nophoto:true,x:["ptax"],ask:"Refer this to the Assistant Assessor and Collector of my ward, correct the record and send a corrected bill.",w:"BMC's Assessment and Collection Department handles property tax, and its MARG portal has a property tax category.",k:"property tax assessment mutation"},
  {c:7,l:"Chemist or medical store problem",a:"fda",x:["unit","prod"],ask:"Inspect this medical store and act on violations of the drug rules.",w:"FDA Maharashtra regulates chemists, and its helpline takes reports of fake medicines.",k:"chemist pharmacy medical medicine medicines tablet tablets prescription pharmacist drug drugstore"},
  {c:4,l:"App cab or bike taxi problem (Ola, Uber, Rapido)",a:"rto",x:["veh","zone","fare"],ask:"Act against this driver's permit and take it up with the app company.",w:"Report it in the app first and keep the ticket number. The RTO regulates app cabs, and the state toll-free line takes Ola and Uber complaints.",k:"ola uber rapido aggregator app cancel cancelled cancellation surge ride"},
  {c:5,l:"Harassment or feeling unsafe (women's safety)",urgent:true,a:"women",ask:"Send help and act against the person.",k:"harass harassment harassed stalk stalking stalker followed following molest molested molestation eve-teasing grope groped women woman girl lewd"},
@@ -709,7 +746,7 @@ var ISSUES = [
  {c:11,l:"Mobile or broadband service problem",a:"telecom",nophoto:true,x:["oper","dock"],ask:"Resolve this complaint, which customer care has not resolved.",k:"mobile network signal broadband internet wifi fiber fibre recharge sim porting jio airtel vodafone bsnl mtnl"},
  {c:11,l:"Bank, UPI, card or loan complaint",a:"rbi",nophoto:true,x:["bankn","dock"],ask:"Direct the bank or company to resolve this and compensate me for the loss.",k:"bank upi card credit debit loan emi nbfc recovery charges account atm refund failed neft"},
  {c:11,l:"Insurance claim or policy complaint",a:"irdai",nophoto:true,x:["insr","dock"],ask:"Direct the insurer to settle this.",k:"insurance insurer claim policy premium mediclaim cashless lic"},
- {c:10,l:"Any other civic problem",a:"bmc",ask:"Look into this and reply with the action taken.",k:"property tax assessment"},
+ {c:10,l:"Any other civic problem",a:"bmc",ask:"Look into this and reply with the action taken.",k:""},
  {c:10,l:"Problem with a state government office",a:"state",x:["dept"],ask:"Resolve this and reply with the action taken.",k:"mantralaya collector tehsildar talathi ration government office"}
 ];
 var OTHER = ISSUES.length - 2;
@@ -980,6 +1017,7 @@ function renderActions(ag, ta, box, note, ready, more, xt){
   var urgent = !!ag.callFirst || $("f-urgent").checked;
   var of = function(t){ return ag.ch.filter(function(c){ return c.t === t; }); };
   var was = of("wa"), smss = of("sms"), mails = of("mail"), webs = of("web"), tels = of("tel"), lead = true, xDone = false;
+  if(cur.nobot){ was = was.filter(function(c){ return !c.bot; }); }
   var cls = function(kind){ var c = lead ? kind : ""; lead = false; return "btn " + c; };
   var after = function(){
     note.textContent = "Opened." + (xt && !xDone ? " Posting it on X as well, tagging @" + ag.x + ", adds public pressure." : "") + (more ? " Then come back to this page for the next complaint below." : "");
@@ -1089,8 +1127,10 @@ function renderActions(ag, ta, box, note, ready, more, xt){
 
   webs.forEach(function(c){
     var a = el("a", {"class":"btn", href:c.url, target:"_blank", rel:"noopener"}, c.label);
-    a.appendChild(el("small", null, c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
+    var isMarg = c.url.indexOf("marg.mcgm.gov.in") > -1;
+    a.appendChild(el("small", null, isMarg ? (MARG_CAT[cur.l] ? "Category to pick: " + MARG_CAT[cur.l] : "Pick the closest of its categories") : c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
     a.addEventListener("click", after); box.appendChild(a);
+    if(isMarg){ box.appendChild(el("p", {"class":"tip"}, "No login needed: it opens as a guest. It accepts only a geotagged photo, so switch on location tags in your camera before you take the picture. Paste your copied message as the description.")); }
   });
   lead = false;
   addX();
