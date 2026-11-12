@@ -252,18 +252,18 @@ var BOT = {
 };
 
 var AG = {
-  bmc:{x:"mybmc",name:"BMC, your ward office",
-    note:"This number is BMC's chatbot. It ignores a typed-out complaint and only moves when you tap its buttons, so follow the steps under the button. You can also file on BMC's MARG portal or in the MyBMC MARG app, which list 114 complaint types and give a tracking number. A post tagging @mybmc on X also gets registered on MARG.",
+  bmc:{x:"mybmc",webFirst:true,name:"BMC, your ward office",
+    note:"MARG is BMC's own complaint system: every complaint gets a tracking number, and posts tagging @mybmc on X are registered there too. The MyBMC MARG app does the same job. The WhatsApp number is a menu chatbot: it only moves when you tap its buttons, so follow the steps under it.",
     ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},MARG_WEB]},
   bmcManhole:{x:"mybmc",name:"BMC, manhole desk",
     note:"BMC runs a separate chatbot only for open, damaged or missing manhole covers.",
     ch:[{t:"wa",bot:"manhole",num:"919324500600",show:"93245 00600",label:"Start BMC's manhole chatbot"},{t:"tel",num:"1916",label:"Call BMC helpline"},MARG_WEB]},
-  tree:{x:"mybmc",name:"BMC Tree Authority",
+  tree:{x:"mybmc",webFirst:true,name:"BMC Tree Authority",
     note:"BMC's 1916 helpline registers tree complaints for the Garden Department. If the chatbot shows no matching option, call 1916. If cutting is under way right now, call the police too.",
     ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"tel",num:"100",label:"Call police (cutting under way)"},MARG_WEB]},
-  light:{x:"mybmc",name:"BMC and your electricity distributor",
+  light:{x:"mybmc",webFirst:true,name:"BMC and your electricity distributor",
     note:"Pick your area in step 2 to get the distributor's own streetlight desk. BMC takes the complaint for the whole city and passes it on.",
-    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"}]},
+    ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},MARG_WEB]},
   fire:{x:"mybmc",name:"Mumbai Fire Brigade, through BMC",
     note:"The Fire Brigade is a BMC department with no separate complaint line for standing hazards, so these go through BMC. For a fire or immediate danger, call 101.",
     ch:[BMC_WA,{t:"tel",num:"101",label:"Call Fire Brigade (emergency)"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
@@ -878,6 +878,7 @@ var ISSUES = [
  {c:5,l:"Child labour in a shop or eatery",a:"bmc",nobot:true,x:["unit"],ask:"Inspect this establishment and act on the child labour.",w:"BMC's complaint portal takes reports of children under 14 working in shops and establishments.",k:"child labour labor kids children working bal majdoor"},
  {c:7,l:"Liquor shop open after hours or on a dry day",a:"bmc",nobot:true,x:["unit"],ask:"Check this shop and act on the violation.",w:"BMC's complaint portal takes reports of liquor shops open beyond permitted hours or on a holiday.",k:"liquor wine daru alcohol dry"},
  {c:5,l:"Stray cattle, goats or pigs",a:"bmc",nobot:true,ask:"Send the team to remove the animals.",w:"BMC removes stray cattle and other animals from public places.",k:"cattle cow cows bull buffalo goat goats pig pigs"},
+ {c:4,l:"Traffic jam or unmanaged junction",a:"traffic",ask:"Post traffic police at this spot during these hours and clear whatever is causing the jam.",w:"Mumbai Traffic Police manage junctions and congestion. Say when it happens and what causes it, if you can tell.",k:"jam jams jammed congestion congested bottleneck gridlock standstill chakka junction constable snarl"},
  {c:10,l:"Any other civic problem",a:"bmc",ask:"Look into this and reply with the action taken.",k:""},
  {c:10,l:"Problem with a state government office",a:"state",x:["dept"],ask:"Resolve this and reply with the action taken.",k:"mantralaya collector tehsildar talathi ration government office"}
 ];
@@ -1198,6 +1199,17 @@ function renderActions(ag, ta, box, note, ready, more, xt){
   if(urgent){ tels.forEach(addTel); tels = []; addX(); }
   else if(phoneOnly){ addX(); }
 
+  var addWebs = function(first){
+  webs.forEach(function(c, wi){
+    var a = el("a", {"class": (first && wi === 0 && ready) ? "btn send" : "btn", href:c.url, target:"_blank", rel:"noopener"}, c.label);
+    var isMarg = c.url.indexOf("marg.mcgm.gov.in") > -1;
+    a.appendChild(el("small", null, isMarg ? (MARG_CAT[cur.l] ? "Category: " + MARG_CAT[cur.l][0] + (MARG_CAT[cur.l][1] ? ". Type: " + MARG_CAT[cur.l][1] : ". Then pick the type that fits") : "Pick the closest category and type") : c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
+    a.addEventListener("click", after); box.appendChild(a);
+    if(isMarg){ box.appendChild(el("p", {"class":"tip"}, "It signs you in with your mobile number and an OTP. It accepts only a geotagged photo, so switch on location tags in your camera before you take the picture. Paste your copied message as the description.")); }
+  });
+    webs = [];
+  };
+  if(ag.webFirst && !urgent){ addWebs(true); lead = false; }
   was.forEach(function(c){
     var a = el("a", {"class":cls("send"), target:"_blank", rel:"noopener",
       href:"https://wa.me/" + c.num + "?text=" + encodeURIComponent(text)});
@@ -1256,13 +1268,7 @@ function renderActions(ag, ta, box, note, ready, more, xt){
   });
   box.appendChild(copy);
 
-  webs.forEach(function(c){
-    var a = el("a", {"class":"btn", href:c.url, target:"_blank", rel:"noopener"}, c.label);
-    var isMarg = c.url.indexOf("marg.mcgm.gov.in") > -1;
-    a.appendChild(el("small", null, isMarg ? (MARG_CAT[cur.l] ? "Category: " + MARG_CAT[cur.l][0] + (MARG_CAT[cur.l][1] ? ". Type: " + MARG_CAT[cur.l][1] : ". Then pick the type that fits") : "Pick the closest category and type") : c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
-    a.addEventListener("click", after); box.appendChild(a);
-    if(isMarg){ box.appendChild(el("p", {"class":"tip"}, "It signs you in with your mobile number and an OTP. It accepts only a geotagged photo, so switch on location tags in your camera before you take the picture. Paste your copied message as the description.")); }
-  });
+  addWebs(false);
   lead = false;
   addX();
 
