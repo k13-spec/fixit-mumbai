@@ -106,6 +106,7 @@ ol.esc li::marker,ol.steps li::marker{font-family:var(--mono);font-weight:600;co
 ol.steps{margin:6px 0 4px;padding-left:24px}ol.steps li{margin:3px 0}
 footer{color:var(--muted);font-size:13px;padding:12px 4px 0;border-top:1px solid var(--line)}
 footer p{margin:0 0 8px}
+.report a,footer a{color:var(--accent);font-weight:600}
 footer .disc{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
 @media (max-width:380px){.mast h1{font-size:31px}.seal{width:54px;height:54px}}
 @media (prefers-reduced-motion:no-preference){.btn,.chip,.issue{transition:background-color .12s,border-color .12s}}
@@ -204,6 +205,7 @@ footer .disc{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-tr
 <footer>
   <p class="disc">Fixit Mumbai is an independent citizen project. It is not affiliated with BMC, the police or any government body.</p>
   <p>This page only writes the message. Nothing is sent until you press send in WhatsApp, your mail app or the agency's portal. Every number and portal here was checked against official sites or news reports on 12 November 2026. Numbers change. If one fails, BMC's 1916 and the police on 112 will redirect you.</p>
+  <p><a id="report-foot" href="mailto:k13@mail.instinct.com?subject=Fixit%20Mumbai%3A%20wrong%20contact">Report a wrong number, email or link</a>. We fix it within days.</p>
 </footer>
 </main>
 
@@ -1026,6 +1028,12 @@ function renderIssues(){
   });
 }
 
+var REPORT_TO = "k13@mail.instinct.com";
+function reportLink(issue, agency){
+  var body = (issue ? "Issue: " + issue + "\nAgency: " + agency + "\n" : "") + "What is wrong (number, email, link or step): \nWhat it should be, if you know: \n";
+  return "mailto:" + REPORT_TO + "?subject=" + encodeURIComponent("Fixit Mumbai: wrong contact" + (agency ? " for " + agency : "")) + "&body=" + encodeURIComponent(body);
+}
+
 function pick(issue){
   $("f-urgent").checked = !!issue.urgent;
   cur = issue; cat = issue.c; $("q").value = "";
@@ -1122,6 +1130,9 @@ function build(){
     wrap.appendChild(ta); blk.appendChild(wrap);
     var acts = el("div", {"class":"actions"}); blk.appendChild(acts);
     var note = el("p", {"class":"tip"}); blk.appendChild(note);
+    var rep = el("p", {"class":"tip report"});
+    rep.appendChild(el("a", {href: reportLink(cur.l, shortName(ag.name)), target:"_blank", rel:"noopener"}, "Wrong number or dead link here? Tell us"));
+    blk.appendChild(rep);
     var rkey = cur.l + "|" + p.a;
     var showRef = refFieldFor(cur, ag, $("f-urgent").checked);
     var draw = function(){
