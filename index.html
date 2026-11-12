@@ -614,6 +614,7 @@ var X = {
   gascons:{id:"gascons",label:"Consumer or customer number",ph:"From your gas book or bill",opt:true},
   hosp:{id:"hosp",label:"Hospital or dispensary name",ph:"And the ward or OPD, if you know it"},
   ptax:{id:"ptax",label:"Property account number",ph:"From your property tax bill",opt:true},
+  schl:{id:"schl",label:"School name",ph:""},
   oper:{id:"oper",label:"Operator, and your number or account ID",ph:"Airtel, 98xxxxxx10"},
   dock:{id:"dock",label:"Complaint number the company gave you",ph:"And the date you complained",opt:true},
   bankn:{id:"bankn",label:"Bank or company, and branch",ph:""},
@@ -754,6 +755,38 @@ var MARG_CAT = {
  "Property tax bill or assessment problem": [
   "Property Tax, Ownership Records, Tenanted / Leased Municipal Property",
   null
+ ],
+ "Unlicensed nursing home or bogus doctor": [
+  "Municipal Hospitals & Health Centres",
+  null
+ ],
+ "Municipal school problem": [
+  "School Infrastructure & Services",
+  null
+ ],
+ "Birth, death or marriage certificate delayed": [
+  "Certificates, Licenses & Welfare Services",
+  "Delay in obtaining birth / death / marriage certificate"
+ ],
+ "Crematorium or cemetery problem": [
+  "Cemetery, Crematorium & Burial Ground Services",
+  null
+ ],
+ "Water bill or meter problem": [
+  "Water Supply",
+  null
+ ],
+ "Child labour in a shop or eatery": [
+  "Shops, Markets & Food Safety",
+  "Child labour (below 14) in shop or establishment"
+ ],
+ "Liquor shop open after hours or on a dry day": [
+  "Shops, Markets & Food Safety",
+  "Liquor shop open beyond permitted hours or on holiday"
+ ],
+ "Stray cattle, goats or pigs": [
+  "Stray Animals, Pets, Birds & Wildlife",
+  "Stray Cattle / Goats / Pigs"
  ]
 };
 
@@ -837,6 +870,14 @@ var ISSUES = [
  {c:11,l:"Mobile or broadband service problem",a:"telecom",nophoto:true,x:["oper","dock"],ask:"Resolve this complaint, which customer care has not resolved.",k:"mobile network signal broadband internet wifi fiber fibre recharge sim porting jio airtel vodafone bsnl mtnl"},
  {c:11,l:"Bank, UPI, card or loan complaint",a:"rbi",nophoto:true,x:["bankn","dock"],ask:"Direct the bank or company to resolve this and compensate me for the loss.",k:"bank upi card credit debit loan emi nbfc recovery charges account atm refund failed neft"},
  {c:11,l:"Insurance claim or policy complaint",a:"irdai",nophoto:true,x:["insr","dock"],ask:"Direct the insurer to settle this.",k:"insurance insurer claim policy premium mediclaim cashless lic"},
+ {c:9,l:"Unlicensed nursing home or bogus doctor",a:"bmc",nobot:true,x:["hosp"],ask:"Inspect this clinic or nursing home, check its registration and the staff's qualifications, and act on violations.",w:"BMC's Public Health Department registers nursing homes, and its complaint portal takes reports of unauthorised ones and of bogus medical staff.",k:"nursing clinic quack bogus fake doctor unlicensed unregistered"},
+ {c:9,l:"Municipal school problem",a:"bmc",nobot:true,x:["schl"],ask:"Inspect the school and fix this, and tell me the action taken.",w:"BMC runs the municipal schools, and its complaint portal has a school category.",k:"school teacher classroom students municipal"},
+ {c:9,l:"Birth, death or marriage certificate delayed",a:"bmc",nobot:true,nophoto:true,x:["app"],ask:"Issue the certificate or state the reason for the delay in writing.",w:"BMC issues birth, death and marriage certificates in Mumbai.",k:"birth death marriage certificate"},
+ {c:9,l:"Crematorium or cemetery problem",a:"bmc",nobot:true,ask:"Look into this at the crematorium or cemetery and fix it.",w:"BMC runs the municipal crematoriums and cemeteries.",k:"crematorium cremation cemetery burial smashan kabristan funeral furnace pyre graveyard"},
+ {c:3,l:"Water bill or meter problem",a:"bmc",nobot:true,nophoto:true,ask:"Correct the bill or repair the meter, and send a corrected bill.",w:"BMC's water department bills for water and maintains the meters.",k:"water bill meter billing reading"},
+ {c:5,l:"Child labour in a shop or eatery",a:"bmc",nobot:true,x:["unit"],ask:"Inspect this establishment and act on the child labour.",w:"BMC's complaint portal takes reports of children under 14 working in shops and establishments.",k:"child labour labor kids children working bal majdoor"},
+ {c:7,l:"Liquor shop open after hours or on a dry day",a:"bmc",nobot:true,x:["unit"],ask:"Check this shop and act on the violation.",w:"BMC's complaint portal takes reports of liquor shops open beyond permitted hours or on a holiday.",k:"liquor wine daru alcohol dry"},
+ {c:5,l:"Stray cattle, goats or pigs",a:"bmc",nobot:true,ask:"Send the team to remove the animals.",w:"BMC removes stray cattle and other animals from public places.",k:"cattle cow cows bull buffalo goat goats pig pigs"},
  {c:10,l:"Any other civic problem",a:"bmc",ask:"Look into this and reply with the action taken.",k:""},
  {c:10,l:"Problem with a state government office",a:"state",x:["dept"],ask:"Resolve this and reply with the action taken.",k:"mantralaya collector tehsildar talathi ration government office"}
 ];
