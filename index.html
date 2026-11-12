@@ -257,7 +257,7 @@ var AG = {
     ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},MARG_WEB]},
   bmcManhole:{x:"mybmc",name:"BMC, manhole desk",
     note:"BMC runs a separate chatbot only for open, damaged or missing manhole covers.",
-    ch:[{t:"wa",bot:"manhole",num:"919324500600",show:"93245 00600",label:"Start BMC's manhole chatbot"},{t:"tel",num:"1916",label:"Call BMC helpline"}]},
+    ch:[{t:"wa",bot:"manhole",num:"919324500600",show:"93245 00600",label:"Start BMC's manhole chatbot"},{t:"tel",num:"1916",label:"Call BMC helpline"},MARG_WEB]},
   tree:{x:"mybmc",name:"BMC Tree Authority",
     note:"BMC's 1916 helpline registers tree complaints for the Garden Department. If the chatbot shows no matching option, call 1916. If cutting is under way right now, call the police too.",
     ch:[BMC_WA,{t:"tel",num:"1916",label:"Call BMC helpline"},{t:"tel",num:"100",label:"Call police (cutting under way)"},MARG_WEB]},
@@ -625,38 +625,136 @@ var X = {
 };
 
 var AIR = "BMC's air pollution mitigation guidelines for construction sites";
-// Category names exactly as they appear in the Grievance Category list on BMC's MARG portal (seen 12 Nov 2026).
+// [category, type] exactly as they appear in the two dropdowns on BMC's MARG complaint form (read 12 Nov 2026). null type: several fit, the user picks.
 var MARG_CAT = {
- "Pothole": "Roads, Footpaths, Streetlights, & Traffic",
- "Bad road surface or failed repair": "Roads, Footpaths, Streetlights, & Traffic",
- "Broken or missing footpath": "Roads, Footpaths, Streetlights, & Traffic",
- "Road dug up and left open": "Roads, Footpaths, Streetlights, & Traffic",
- "Streetlight not working": "Roads, Footpaths, Streetlights, & Traffic",
- "Footpath blocked": "Illegal Encroachment & Street Vendors",
- "Illegal hawkers or stalls": "Illegal Encroachment & Street Vendors",
- "Construction site dust": "Environmental Pollution (Air, Noise & Water Bodies)",
- "Demolition without cover or water": "Environmental Pollution (Air, Noise & Water Bodies)",
- "Uncovered or overloaded debris truck": "Environmental Pollution (Air, Noise & Water Bodies)",
- "Garbage or leaves being burnt": "Environmental Pollution (Air, Noise & Water Bodies)",
- "Smoke from a bakery, eatery, plant or factory": "Environmental Pollution (Air, Noise & Water Bodies)",
- "Loudspeaker or late-night construction noise": "Environmental Pollution (Air, Noise & Water Bodies)",
- "Sewage or effluent into a river, lake or sea": "Environmental Pollution (Air, Noise & Water Bodies)",
- "Garbage not collected or dumping spot": "Garbage, Cleanliness & Public Toilets",
- "Debris dumped on the road": "Garbage, Cleanliness & Public Toilets",
- "Dirty or broken public toilet": "Garbage, Cleanliness & Public Toilets",
- "No water or low pressure": "Water Supply",
- "Contaminated water": "Water Supply",
- "Leaking or burst pipe": "Water Supply",
- "Sewage overflow": "Drains & Sewage",
- "Waterlogging or choked drain": "Drains & Sewage",
- "Mosquito breeding or rats": "Pest, Mosquito and Rat Control",
- "Illegal construction": "Unauthorized Construction or Commercial Activity",
- "Dangerous tree or illegal cutting": "Parks, Gardens, Recreational Facilities & Tree Cutting",
- "Garden, park or playground badly kept or locked": "Parks, Gardens, Recreational Facilities & Tree Cutting",
- "Dirty restaurant, eatery or food stall": "Shops, Markets & Food Safety",
- "Stray dog nuisance": "Stray Animals, Pets, Birds & Wildlife",
- "BMC hospital or dispensary problem": "Municipal Hospitals & Health Centres",
- "Property tax bill or assessment problem": "Property Tax, Ownership Records, Tenanted / Leased Municipal Property"
+ "Pothole": [
+  "Roads, Footpaths, Streetlights, & Traffic",
+  "Bad patches/potholes on roads"
+ ],
+ "Bad road surface or failed repair": [
+  "Roads, Footpaths, Streetlights, & Traffic",
+  "Road or footpath needs repair / resurfacing"
+ ],
+ "Broken or missing footpath": [
+  "Roads, Footpaths, Streetlights, & Traffic",
+  "Road or footpath needs repair / resurfacing"
+ ],
+ "Road dug up and left open": [
+  "Roads, Footpaths, Streetlights, & Traffic",
+  "Road trench not restored after digging / repair work"
+ ],
+ "Streetlight not working": [
+  "Roads, Footpaths, Streetlights, & Traffic",
+  "Streetlight or traffic signal not working"
+ ],
+ "Footpath blocked": [
+  "Roads, Footpaths, Streetlights, & Traffic",
+  "Illegal barrier, hoarding or object blocking footpath"
+ ],
+ "Illegal hawkers or stalls": [
+  "Illegal Encroachment & Street Vendors",
+  "Illegal hawkers or street vendors on road / footpath"
+ ],
+ "Open or broken manhole": [
+  "Drains & Sewage",
+  "Drain or manhole cover missing / broken / protective grill missing"
+ ],
+ "Construction site dust": [
+  "Environmental Pollution (Air, Noise & Water Bodies)",
+  "Air pollution from construction site, road dust or bakery"
+ ],
+ "Demolition without cover or water": [
+  "Environmental Pollution (Air, Noise & Water Bodies)",
+  "Air pollution from construction site, road dust or bakery"
+ ],
+ "Smoke from a bakery, eatery, plant or factory": [
+  "Environmental Pollution (Air, Noise & Water Bodies)",
+  "Air pollution from construction site, road dust or bakery"
+ ],
+ "Uncovered or overloaded debris truck": [
+  "Environmental Pollution (Air, Noise & Water Bodies)",
+  "Air pollution from construction site, road dust or bakery"
+ ],
+ "Garbage or leaves being burnt": [
+  "Environmental Pollution (Air, Noise & Water Bodies)",
+  "Air pollution from construction site, road dust or bakery"
+ ],
+ "Garbage not collected or dumping spot": [
+  "Garbage, Cleanliness & Public Toilets",
+  "Garbage not collected / Garbage vehicle not coming"
+ ],
+ "Debris dumped on the road": [
+  "Garbage, Cleanliness & Public Toilets",
+  "Construction debris not removed from public place"
+ ],
+ "Dirty or broken public toilet": [
+  "Garbage, Cleanliness & Public Toilets",
+  "Public toilet not cleaned"
+ ],
+ "No water or low pressure": [
+  "Water Supply",
+  "Water not supplied / shortage of water"
+ ],
+ "Contaminated water": [
+  "Water Supply",
+  "Dirty / contaminated water supply"
+ ],
+ "Leaking or burst pipe": [
+  "Water Supply",
+  "Water pipeline leaking or burst"
+ ],
+ "Sewage overflow": [
+  "Drains & Sewage",
+  "Drain or manhole blocked / overflowing"
+ ],
+ "Waterlogging or choked drain": [
+  "Drains & Sewage",
+  "Sewer pipeline burst or needs repair / Water logging"
+ ],
+ "Mosquito breeding or rats": [
+  "Pest, Mosquito and Rat Control",
+  "Mosquito, rat or flies nuisance"
+ ],
+ "Illegal construction": [
+  "Removal Of Enchroachment",
+  "Unauthorized Construction"
+ ],
+ "Dilapidated building or wall": [
+  "Removal Of Enchroachment",
+  "Dilapidated Building"
+ ],
+ "Mangrove cutting or wetland dumping": [
+  "Removal Of Enchroachment",
+  "Illegal Dumping"
+ ],
+ "Building or dumping on a beach, creek or the coast": [
+  "Removal Of Enchroachment",
+  "Illegal Dumping"
+ ],
+ "Dangerous tree or illegal cutting": [
+  "Parks, Gardens, Recreational Facilities & Tree Cutting",
+  "Tree cutting or trimming needed / dangerous tree"
+ ],
+ "Garden, park or playground badly kept or locked": [
+  "Parks, Gardens, Recreational Facilities & Tree Cutting",
+  "Municipal playground or garden damaged / not maintained"
+ ],
+ "Stray dog nuisance": [
+  "Stray Animals, Pets, Birds & Wildlife",
+  "Stray dog nuisance / needs sterilization"
+ ],
+ "Dead animal": [
+  "Stray Animals, Pets, Birds & Wildlife",
+  "Dead animal lying in public place"
+ ],
+ "BMC hospital or dispensary problem": [
+  "Municipal Hospitals & Health Centres",
+  null
+ ],
+ "Property tax bill or assessment problem": [
+  "Property Tax, Ownership Records, Tenanted / Leased Municipal Property",
+  null
+ ]
 };
 
 var CATS = ["Roads","Air and dust","Garbage","Water, drains, power","Traffic","Safety and noise","Buildings","Shops and food","Environment","Govt services","Other","Phone, gas, money"];
@@ -1120,7 +1218,7 @@ function renderActions(ag, ta, box, note, ready, more, xt){
   webs.forEach(function(c){
     var a = el("a", {"class":"btn", href:c.url, target:"_blank", rel:"noopener"}, c.label);
     var isMarg = c.url.indexOf("marg.mcgm.gov.in") > -1;
-    a.appendChild(el("small", null, isMarg ? (MARG_CAT[cur.l] ? "Category to pick: " + MARG_CAT[cur.l] : "Pick the closest of its categories") : c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
+    a.appendChild(el("small", null, isMarg ? (MARG_CAT[cur.l] ? "Category: " + MARG_CAT[cur.l][0] + (MARG_CAT[cur.l][1] ? ". Type: " + MARG_CAT[cur.l][1] : ". Then pick the type that fits") : "Pick the closest category and type") : c.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
     a.addEventListener("click", after); box.appendChild(a);
     if(isMarg){ box.appendChild(el("p", {"class":"tip"}, "It signs you in with your mobile number and an OTP. It accepts only a geotagged photo, so switch on location tags in your camera before you take the picture. Paste your copied message as the description.")); }
   });
