@@ -60,6 +60,7 @@ h2 .n{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14e
 h2 .n::before{content:"STEP "}
 label{font-weight:600;font-size:14px;display:block;margin-bottom:4px}
 label small{font-weight:400;color:var(--muted)}
+input[type="file"]{padding:9px 10px;font-size:14px}
 input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-bottom:2px solid var(--muted);border-radius:4px;padding:11px 12px}
 textarea{resize:vertical;min-height:100px}
 input:focus,textarea:focus,select:focus{border-bottom-color:var(--accent)}
@@ -155,6 +156,11 @@ footer .disc{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-tr
   <h2 id="h-fill"><span class="n">2</span>Fill the details</h2>
   <div class="who" id="who"></div>
   <form class="fields" id="form" novalidate>
+    <div>
+      <label for="f-photo">Your photo <small>(optional, fills in place and time)</small></label>
+      <input id="f-photo" type="file" accept="image/*">
+      <small class="hint" id="f-photo-hint">Read on your phone only. It is not uploaded: attach it yourself when you send.</small>
+    </div>
     <div>
       <label for="f-loc">Exact location</label>
       <input id="f-loc" type="text" placeholder="Road, building or junction, area, pin code" autocomplete="off">
@@ -1038,6 +1044,62 @@ function reportLink(issue, agency){
   return "mailto:" + REPORT_TO + "?subject=" + encodeURIComponent("Fixit Mumbai: wrong contact" + (agency ? " for " + agency : "")) + "&body=" + encodeURIComponent(body);
 }
 
+
+// Reads place and time from a JPEG's own EXIF data, on the device. Nothing is uploaded.
+function readExif(buf){
+  var d = new DataView(buf), out = {};
+  if(d.byteLength < 4 || d.getUint16(0) !== 0xFFD8){ return out; }
+  var off = 2;
+  while(off + 4 < d.byteLength){
+    var marker = d.getUint16(off), size = d.getUint16(off + 2);
+    if(marker === 0xFFE1 && d.getUint32(off + 4) === 0x45786966){ break; }
+    if((marker & 0xFF00) !== 0xFF00 || marker === 0xFFDA){ return out; }
+    off += 2 + size;
+  }
+  var t = off + 10;
+  if(t + 8 > d.byteLength){ return out; }
+  var le = d.getUint16(t) === 0x4949;
+  var u16 = function(o){ return d.getUint16(o, le); }, u32 = function(o){ return d.getUint32(o, le); };
+  var ifd = function(start, fn){
+    if(start + 2 > d.byteLength){ return; }
+    var n = u16(start);
+    for(var i = 0; i < n; i++){ var e = start + 2 + i * 12; if(e + 12 > d.byteLength){ return; } fn(u16(e), e); }
+  };
+  var rat = function(o){ var den = u32(o + 4); return den ? u32(o) / den : 0; };
+  var ascii = function(o, len){ var x = ""; for(var i = 0; i < len && o + i < d.byteLength; i++){ var c = d.getUint8(o + i); if(!c){ break; } x += String.fromCharCode(c); } return x; };
+  var gps = 0, exif = 0;
+  ifd(t + u32(t + 4), function(tag, e){ if(tag === 0x8825){ gps = t + u32(e + 8); } if(tag === 0x8769){ exif = t + u32(e + 8); } });
+  if(exif){ ifd(exif, function(tag, e){ if(tag === 0x9003){ out.when = ascii(t + u32(e + 8), u32(e + 4)); } }); }
+  if(gps){
+    var g = {};
+    ifd(gps, function(tag, e){
+      if(tag === 1 || tag === 3){ g[tag] = String.fromCharCode(d.getUint8(e + 8)); }
+      if(tag === 2 || tag === 4){ var o = t + u32(e + 8); if(o + 24 <= d.byteLength){ g[tag] = rat(o) + rat(o + 8) / 60 + rat(o + 16) / 3600; } }
+    });
+    if(g[2] && g[4]){ out.lat = (g[1] === "S" ? -1 : 1) * g[2]; out.lng = (g[3] === "W" ? -1 : 1) * g[4]; }
+  }
+  return out;
+}
+function usePhoto(file){
+  var hint = $("f-photo-hint");
+  if(!file){ return; }
+  var r = new FileReader();
+  r.onload = function(){
+    var x = {}; try{ x = readExif(r.result); }catch(e){}
+    var got = [];
+    if(typeof x.lat === "number" && (x.lat || x.lng)){
+      $("f-map").value = "https://maps.google.com/?q=" + x.lat.toFixed(6) + "," + x.lng.toFixed(6); got.push("map pin");
+    }
+    var m = x.when && x.when.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})/);
+    if(m){ $("f-when").value = m[1] + "-" + m[2] + "-" + m[3] + "T" + m[4] + ":" + m[5]; got.push("time"); }
+    if(got.length === 2){ hint.textContent = "Filled in the map pin and time from the photo. Add the road or building name below. Remember to attach the photo when you send."; }
+    else if(got.length){ hint.textContent = "Filled in the " + got[0] + " from the photo. " + (got[0] === "time" ? "No location found in it: your phone may have withheld it, or location tags are off in your camera. BMC's MARG portal accepts only photos with a location tag." : "Check the time below."); }
+    else{ hint.textContent = "No place or time found in this photo. Your phone may have withheld them, or location tags are off in your camera. Fill the fields below yourself. BMC's MARG portal accepts only photos with a location tag."; }
+    build();
+  };
+  r.readAsArrayBuffer(file.slice(0, 262144));
+}
+
 function pick(issue){
   $("f-urgent").checked = !!issue.urgent;
   cur = issue; cat = issue.c; $("q").value = "";
@@ -1359,6 +1421,7 @@ function nowLocal(){
 }
 
 $("f-when").value = nowLocal();
+$("f-photo").addEventListener("change", function(){ usePhoto(this.files && this.files[0]); });
 ["f-loc","f-land","f-map","f-when","f-det","f-name"].forEach(function(id){ $(id).addEventListener("input", build); });
 $("f-urgent").addEventListener("change", build);
 $("form").addEventListener("submit", function(e){ e.preventDefault(); });
